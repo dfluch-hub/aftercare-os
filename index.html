@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123B36">
+  <meta name="description" content="AfterCare OS — a calm, guided recovery organizer for the first 30 days after hospital or surgery.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./assets/app.css">
+  <title>AfterCare OS</title>
+</head>
+<body>
+  <div id="appShell" class="shell">
+    <aside class="desktop-sidebar" aria-label="Primary">
+      <div class="brand brand--side">
+        <div class="brand__mark">A+</div>
+        <div>
+          <div class="brand__name">AfterCare OS</div>
+          <div class="brand__tagline">Recovery, organized.</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <button data-route="home" class="nav-item is-active"><span>⌂</span><b>Today</b></button>
+        <button data-route="plan" class="nav-item"><span>☰</span><b>Plan</b></button>
+        <button data-route="checkin" class="nav-item"><span>♡</span><b>Check-in</b></button>
+        <button data-route="more" class="nav-item"><span>•••</span><b>More</b></button>
+      </nav>
+      <div class="sidebar-note">
+        <span class="eyebrow">Local-first</span>
+        <p>Your entries stay on this device in this prototype.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__mark">A+</div>
+          <div>
+            <div class="brand__name">AfterCare OS</div>
+            <div class="brand__tagline" id="brandSub">Recovery, organized.</div>
+          </div>
+        </div>
+        <div class="topbar__actions">
+          <button class="icon-btn" id="quickAddBtn" aria-label="Quick add">＋</button>
+          <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙︎</button>
+        </div>
+      </header>
+
+      <section id="route-home" class="route is-active" aria-labelledby="homeHeading">
+        <div class="hero">
+          <div class="hero__copy">
+            <span class="eyebrow eyebrow--light" id="recoveryLabel">RECOVERY DAY 1</span>
+            <h1 id="homeHeading">Good morning.</h1>
+            <p id="heroCopy">One clear next step. Everything else can wait.</p>
+            <div class="hero__meta">
+              <span class="chip chip--glass" id="todayChip"></span>
+              <span class="chip chip--glass" id="journeyChip">Day 1 of 30</span>
+              <span class="chip chip--glass" id="planChip">Preview</span>
+            </div>
+          </div>
+          <div class="hero__status">
+            <div class="progress-ring" id="progressRing" style="--progress:0">
+              <div>
+                <strong id="progressPct">0%</strong>
+                <span>today</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section section--tight">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Guided</span>
+              <h2>Your next step</h2>
+            </div>
+            <span class="section-hint">Automatically prioritized</span>
+          </div>
+          <div class="next-step card card--accent">
+            <div class="next-step__icon" id="nextIcon">→</div>
+            <div class="next-step__body">
+              <span class="eyebrow">Recommended next</span>
+              <h3 id="nextTitle">Set up your recovery plan</h3>
+              <p id="nextText">Add the items you already know about, then let the app keep the day simple.</p>
+              <div class="button-row">
+                <button class="btn btn--primary" id="nextActionBtn">Do this now</button>
+                <button class="btn btn--quiet" id="guidedViewBtn">Guided view</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Today</span>
+              <h2>Your day</h2>
+            </div>
+            <button class="text-btn" id="addTaskInline">+ Add</button>
+          </div>
+          <div id="todayTimeline" class="timeline card"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Daily rhythm</span>
+              <h2>Morning → evening</h2>
+            </div>
+          </div>
+          <div class="routine-grid">
+            <button class="routine-card" id="morningRoutine">
+              <div class="routine-card__icon">☀️</div>
+              <div><b>Morning reset</b><span id="morningStatus">Review the day in under a minute.</span></div>
+              <span class="chevron">›</span>
+            </button>
+            <button class="routine-card" id="eveningRoutine">
+              <div class="routine-card__icon">🌙</div>
+              <div><b>Evening wrap-up</b><span id="eveningStatus">Close the loop before you switch off.</span></div>
+              <span class="chevron">›</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Snapshot</span>
+              <h2>At a glance</h2>
+            </div>
+          </div>
+          <div class="metric-grid">
+            <button class="metric-card" data-route-jump="checkin"><strong id="painMetric">—</strong><span>Latest pain / 10</span></button>
+            <button class="metric-card" data-route-jump="checkin"><strong id="energyMetric">—</strong><span>Latest energy</span></button>
+            <button class="metric-card" data-plan-tab="meds"><strong id="medMetric">0/0</strong><span>Medication today</span></button>
+            <button class="metric-card" data-plan-tab="visits"><strong id="visitMetric">—</strong><span>Next visit</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="route-plan" class="route" aria-labelledby="planHeading">
+        <div class="page-heading">
+          <span class="eyebrow">Everything organized</span>
+          <h1 id="planHeading">Your recovery plan</h1>
+          <p>Only the things you entered — kept in one place.</p>
+        </div>
+        <div class="segmented" id="planTabs">
+          <button class="is-active" data-tab="tasks">Tasks</button>
+          <button data-tab="meds">Medication</button>
+          <button data-tab="visits">Visits</button>
+          <button data-tab="questions">Questions</button>
+        </div>
+
+        <div id="panel-tasks" class="plan-panel is-active">
+          <div class="panel-head"><div><h2>Tasks</h2><p>Today, upcoming and repeating.</p></div><button class="btn btn--secondary" id="addTaskBtn">+ Add task</button></div>
+          <div id="taskList" class="stack"></div>
+        </div>
+
+        <div id="panel-meds" class="plan-panel">
+          <div class="notice">Only enter medication names, timing and instructions from a trusted source such as your label, pharmacy, clinician, or discharge paperwork.</div>
+          <div class="panel-head"><div><h2>Medication</h2><p>User-entered schedule only.</p></div><button class="btn btn--secondary" id="addMedBtn">+ Add medication</button></div>
+          <div id="medList" class="stack"></div>
+        </div>
+
+        <div id="panel-visits" class="plan-panel">
+          <div class="panel-head"><div><h2>Visits</h2><p>Appointments and follow-up.</p></div><button class="btn btn--secondary" id="addVisitBtn">+ Add visit</button></div>
+          <div id="visitList" class="stack"></div>
+        </div>
+
+        <div id="panel-questions" class="plan-panel">
+          <div class="panel-head"><div><h2>Questions to ask</h2><p>Save them when they occur.</p></div><button class="btn btn--secondary" id="addQuestionBtn">+ Add question</button></div>
+          <div id="questionList" class="stack"></div>
+        </div>
+      </section>
+
+      <section id="route-checkin" class="route" aria-labelledby="checkHeading">
+        <div class="page-heading">
+          <span class="eyebrow">Log, don’t diagnose</span>
+          <h1 id="checkHeading">Recovery check-in</h1>
+          <p>A short record for you and your next care-team conversation.</p>
+        </div>
+        <div class="card form-card">
+          <div class="segmented segmented--compact" id="checkPeriodTabs">
+            <button class="is-active" data-period="morning">Morning</button>
+            <button data-period="evening">Evening</button>
+          </div>
+          <label class="field"><span>Pain level to record (0–10)</span><input id="painRange" type="range" min="0" max="10" value="0"><b id="painOutput">0/10</b></label>
+          <label class="field"><span>Energy</span><select id="energySelect"><option>Low</option><option selected>Okay</option><option>Good</option><option>High</option></select></label>
+          <label class="field"><span>Daily function / mobility</span><select id="functionSelect"><option>Harder than yesterday</option><option selected>About the same</option><option>Better than yesterday</option></select></label>
+          <label class="field"><span>Anything worth remembering?</span><textarea id="checkNotes" placeholder="A note for yourself or your next care-team conversation."></textarea></label>
+          <button class="btn btn--primary btn--full" id="saveCheckinBtn">Save check-in</button>
+        </div>
+
+        <div class="section">
+          <div class="section-heading"><div><span class="eyebrow">Complete</span><h2>7-day visual history</h2></div></div>
+          <div id="trendCard" class="premium-card">
+            <div class="premium-card__content"><div id="painChart" class="chart"></div><p class="fine">A visual history of values you entered. It does not interpret them clinically.</p></div>
+            <div class="premium-gate" id="trendGate"><span class="pill">Complete</span><h3>See your recent pattern</h3><p>Turn individual check-ins into a simple 7-day visual history.</p><button class="btn btn--primary unlock-complete">Unlock Complete demo</button></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-heading"><div><span class="eyebrow">History</span><h2>Recent check-ins</h2></div><span id="checkCount" class="section-hint"></span></div>
+          <div id="checkHistory" class="stack"></div>
+        </div>
+      </section>
+
+      <section id="route-more" class="route" aria-labelledby="moreHeading">
+        <div class="page-heading">
+          <span class="eyebrow">Tools & settings</span>
+          <h1 id="moreHeading">More</h1>
+          <p>Useful extras without cluttering your daily flow.</p>
+        </div>
+
+        <div class="settings-list">
+          <button class="settings-row" id="openCareNotes"><span class="settings-icon">📋</span><span><b>Care instructions</b><small>Keep trusted instructions easy to find.</small></span><span>›</span></button>
+          <button class="settings-row" id="openContactNote"><span class="settings-icon">☎️</span><span><b>Important contact note</b><small>Keep who to call easy to find.</small></span><span>›</span></button>
+          <button class="settings-row" id="openCaregiver"><span class="settings-icon">👥</span><span><b>Caregiver handoff</b><small>Create a concise helper snapshot.</small></span><span class="pill">Complete</span></button>
+          <button class="settings-row" id="openJourney"><span class="settings-icon">◎</span><span><b>30-day journey</b><small>Organizational milestones, not medical milestones.</small></span><span class="pill">Complete</span></button>
+          <button class="settings-row" id="openReport"><span class="settings-icon">↗</span><span><b>Recovery report</b><small>Print-friendly summary of your entries.</small></span><span class="pill">Complete</span></button>
+          <button class="settings-row" id="exportDataBtn"><span class="settings-icon">↓</span><span><b>Export backup</b><small>Download your local data as JSON.</small></span><span>›</span></button>
+        </div>
+
+        <div class="card trust-card">
+          <span class="eyebrow">Privacy by design</span>
+          <h3>Local first. Cloud later, if we choose.</h3>
+          <p>This prototype stores entries in your browser. The code is structured so cloud sync can be added later without rewriting the app.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-nav" aria-label="Primary">
+      <button data-route="home" class="is-active"><span>⌂</span><b>Today</b></button>
+      <button data-route="plan"><span>☰</span><b>Plan</b></button>
+      <button data-route="checkin"><span>♡</span><b>Check-in</b></button>
+      <button data-route="more"><span>•••</span><b>More</b></button>
+    </nav>
+  </div>
+
+  <div id="onboarding" class="onboarding">
+    <div class="onboarding__inner">
+      <div class="brand">
+        <div class="brand__mark">A+</div>
+        <div><div class="brand__name">AfterCare OS</div><div class="brand__tagline">Recovery, organized.</div></div>
+      </div>
+      <div class="step-dots"><span class="is-active"></span><span></span><span></span></div>
+
+      <section class="onboarding-step is-active" data-step="1">
+        <span class="eyebrow">Welcome home</span>
+        <h1>You have enough to think about.</h1>
+        <p>AfterCare OS organizes the instructions, medication schedule, appointments and notes you already have — then shows you what matters next.</p>
+        <label class="field"><span>Your first name</span><input id="obName" placeholder="Alex"></label>
+        <div class="field"><span>What are you recovering from?</span>
+          <div class="choice-grid" id="recoveryChoices">
+            <button data-value="Surgery">🩹<b>Surgery</b><small>Planned procedure</small></button>
+            <button data-value="Hospital stay">🏥<b>Hospital stay</b><small>Transition back home</small></button>
+            <button data-value="ER visit">🚑<b>ER visit</b><small>After emergency care</small></button>
+            <button data-value="Rehab">🧭<b>Rehab</b><small>Continuing at home</small></button>
+          </div>
+        </div>
+        <label class="field"><span>Recovery start date</span><input id="obDate" type="date"></label>
+        <button class="btn btn--primary btn--full" data-next-step="2">Continue</button>
+      </section>
+
+      <section class="onboarding-step" data-step="2">
+        <span class="eyebrow">Keep it simple</span>
+        <h1>Start with only what you need.</h1>
+        <p>You can add more later. The daily view stays intentionally small.</p>
+        <div class="choice-grid choice-grid--modules" id="moduleChoices">
+          <button data-value="meds" class="is-selected">💊<b>Medication</b><small>Timing & instructions</small></button>
+          <button data-value="tasks" class="is-selected">✓<b>Daily tasks</b><small>Simple to-dos</small></button>
+          <button data-value="checkins" class="is-selected">♡<b>Check-ins</b><small>Pain, energy, function</small></button>
+          <button data-value="visits" class="is-selected">◫<b>Visits</b><small>Appointments & questions</small></button>
+        </div>
+        <div class="button-row button-row--spread"><button class="btn btn--quiet" data-prev-step="1">Back</button><button class="btn btn--primary" data-next-step="3">Continue</button></div>
+      </section>
+
+      <section class="onboarding-step" data-step="3">
+        <span class="eyebrow">One important thing</span>
+        <h1>AfterCare OS organizes. Your care team decides.</h1>
+        <div class="notice notice--danger">This app does not diagnose symptoms, determine urgency, prescribe medication, recommend treatment, or replace medical advice. If you think you may have a medical emergency, contact the appropriate local emergency service or healthcare professional.</div>
+        <label class="field"><span>Optional trusted contact note</span><textarea id="obContact" placeholder="Care-team number / who to call / trusted instruction"></textarea></label>
+        <p class="fine">Your entries are stored locally on this device in this prototype.</p>
+        <button class="btn btn--primary btn--full" id="finishOnboarding">Start my recovery</button>
+      </section>
+    </div>
+  </div>
+
+  <div id="modalRoot" class="modal-root" aria-live="polite"></div>
+  <div id="toast" class="toast" role="status"></div>
+
+  <div id="printArea" class="print-area">
+    <div class="report">
+      <h1>AfterCare OS — Recovery Report</h1>
+      <p id="reportMeta"></p>
+      <hr>
+      <h2>Medication schedule</h2><div id="reportMeds"></div>
+      <h2>Visits</h2><div id="reportVisits"></div>
+      <h2>Questions to ask</h2><div id="reportQuestions"></div>
+      <h2>Recent check-ins</h2><div id="reportChecks"></div>
+      <h2>Care instructions</h2><div id="reportInstructions"></div>
+      <h2>Caregiver / helper notes</h2><div id="reportHelpers"></div>
+      <hr>
+      <p class="fine">This report contains user-entered organizational information. AfterCare OS does not provide medical advice.</p>
+    </div>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
