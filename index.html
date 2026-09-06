@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#123B36">
-<meta name="description" content="AfterCare OS — a calm, local-first recovery organizer.">
+<meta name="description" content="AfterCare OS — a calm, guided recovery organizer for the first 30 days after surgery or hospital care.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon-192.png">
 <title>AfterCare OS</title>
@@ -223,13 +223,66 @@ body{
   }
 }
 
+
+/* FINAL RELEASE — premium mobile UX */
+:root{
+  --bg:#F2F0EA;
+  --card:#FFFEFC;
+  --card2:#EAF1EE;
+  --ink:#13211D;
+  --muted:#69756F;
+  --brand:#103C36;
+  --brand2:#397166;
+  --mint:#DCEBE5;
+  --line:#D9E2DE;
+  --danger:#934A42;
+  --shadow:0 10px 30px rgba(16,60,54,.07),0 1px 0 rgba(255,255,255,.9) inset;
+}
+html{scroll-behavior:smooth;background:#EDEAE3}
+body{background:
+  radial-gradient(circle at 12% -6%,rgba(125,168,155,.16),transparent 30%),
+  radial-gradient(circle at 96% 18%,rgba(204,184,149,.13),transparent 26%),
+  var(--bg);}
+button,input,textarea,select{-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid rgba(57,113,102,.22);outline-offset:2px}
+.app{max-width:780px}
+.topbar{position:sticky;top:0;z-index:70;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 8px;background:linear-gradient(to bottom,rgba(242,240,234,.96),rgba(242,240,234,.82),transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.logo{border-radius:15px;background:linear-gradient(145deg,#0E3A34,#245F55);box-shadow:0 8px 20px rgba(16,60,54,.18);letter-spacing:-.5px}
+.brand b{font-size:15px;letter-spacing:-.15px}.brand small{font-size:10px}
+.iconbtn{background:rgba(255,255,255,.9);border-color:rgba(16,60,54,.09);box-shadow:0 5px 16px rgba(16,60,54,.08);font-size:22px;font-weight:500}
+.main{padding:6px 14px 110px}
+.pagehead{align-items:flex-start;margin:2px 1px 10px}.pagehead h1{font-size:28px;letter-spacing:-1px}.pagehead p{font-size:11px;line-height:1.35;max-width:42ch}
+.eyebrow{font-size:9px;letter-spacing:.15em}
+.card{border-color:rgba(16,60,54,.06);box-shadow:var(--shadow)}
+.todaygrid{gap:11px}
+.hero{min-height:300px;border-radius:28px;background:
+ radial-gradient(circle at 88% 2%,rgba(255,255,255,.13),transparent 31%),
+ linear-gradient(145deg,#0D3832 0%,#1F574F 58%,#3D746A 100%);padding:20px;box-shadow:0 22px 50px rgba(16,60,54,.18)}
+.hero:after{width:260px;height:260px;right:-130px;top:-135px;background:rgba(255,255,255,.065)}
+.hero h2{font-size:30px;letter-spacing:-1.05px;max-width:14ch;margin-top:10px}.hero p{font-size:12px;line-height:1.45;max-width:40ch}
+.nextbox{background:rgba(255,255,255,.105);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:20px;padding:14px 15px}.nextbox b{font-size:16px;letter-spacing:-.25px}.nextbox span{font-size:10.5px;line-height:1.45}.primary{border-radius:13px;min-height:42px;padding:10px 14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.statcard{min-height:132px;border-radius:22px;padding:15px}.statcard .num{font-size:30px}.statcard span{line-height:1.35}.statcard small{letter-spacing:.02em}
+.segmented{position:sticky;top:62px;z-index:40;background:rgba(228,236,232,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(16,60,54,.05);padding:4px}.segmented button{min-height:36px}.panel{border-radius:24px;padding:14px}.panelhead{margin-bottom:10px}.panelhead h2{font-size:19px}.addbtn{min-height:38px;border-radius:12px;padding:9px 13px}
+.item{border-radius:15px;padding:12px;min-height:55px;transition:.14s transform,.14s background}.item:active{transform:scale(.992);background:#FBFCFA}.item b{font-size:12.5px}.item small{font-size:9.5px;line-height:1.45}.check{width:30px;height:30px;border-radius:10px}.x{width:34px;height:34px;border-radius:11px}.x:active{background:#F3E8E6;color:var(--danger)}
+.checkgrid{gap:11px}.checkcard,.history{border-radius:24px}.checkcard h3,.history h3{font-size:17px}.field label{font-size:10px}.field input[type=range]{accent-color:var(--brand)}.field select,.field textarea,.field input[type=text],.field input[type=time],.field input[type=date],.field input[type=datetime-local],.obform input,.obform select,.obform textarea{min-height:44px;border-color:#D4DED9;background:#FFFEFC;border-radius:13px}.field textarea,.obform textarea{min-height:84px}.save{min-height:44px;border-radius:13px}.metric{border-radius:13px;padding:11px}.metric b{font-size:18px}
+.moregrid{gap:11px}.tool{min-height:132px;border-radius:23px;padding:16px;transition:.14s transform,.14s box-shadow}.tool:active{transform:scale(.985);box-shadow:0 7px 18px rgba(16,60,54,.06)}.tool .ico{width:40px;height:40px;border-radius:14px;font-size:17px}.tool b{font-size:15px;letter-spacing:-.2px}.tool small{font-size:10px;line-height:1.45}.reset-tool{grid-column:auto}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(9px + var(--safe));width:min(750px,calc(100% - 22px));margin:0;z-index:100;border-radius:24px;padding:6px;background:rgba(255,255,255,.91);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 18px 45px rgba(16,60,54,.16);border-color:rgba(16,60,54,.08)}.nav button{min-height:48px;border-radius:17px;font-size:9px}.nav button span{font-size:17px}.nav button.active{background:#DDEBE6;box-shadow:inset 0 0 0 1px rgba(16,60,54,.03)}
+.onboarding{overflow:auto;align-items:flex-start;background:
+ radial-gradient(circle at 80% 0%,rgba(127,170,157,.16),transparent 34%),var(--bg);padding-top:calc(18px + env(safe-area-inset-top,0px))}.obbox{max-width:540px;max-height:none;margin:auto}.obcard{height:auto;min-height:min(650px,calc(100dvh - 110px));border-radius:28px;padding:20px;gap:16px}.obtitle h1{font-size:32px;letter-spacing:-1.2px;max-width:13ch}.obtitle p{font-size:11.5px;line-height:1.5;max-width:46ch}.choice4{gap:10px}.choice4 button{min-height:110px;border-radius:20px;padding:14px}.choice4 button b{font-size:14px}.choice4 button small{font-size:9.5px;line-height:1.35}.choice4 button.selected{outline:0;border-color:rgba(16,60,54,.16);box-shadow:inset 0 0 0 2px var(--brand);background:linear-gradient(145deg,#E2EFEA,#F4F8F6)}.tick{width:25px;height:25px}.obactions{position:sticky;bottom:0;padding-top:8px;background:linear-gradient(to top,var(--card) 70%,transparent)}.obactions button{min-height:46px}.tip{font-size:10px;line-height:1.5;border:1px solid rgba(16,60,54,.05)}.field.compact{margin:0}.field.compact label{margin:0 0 6px 2px}.progress i{height:4px}
+.sheet{bottom:calc(8px + var(--safe));border-radius:28px;padding:15px;box-shadow:0 28px 80px rgba(12,38,34,.28)}.sheethead{padding:2px 2px 4px}.sheethead h3{font-size:19px;letter-spacing:-.35px}.close{border-radius:12px}.toast{bottom:calc(86px + var(--safe));font-size:10.5px;padding:10px 14px}
+.empty{border:1px dashed #D7E1DC;border-radius:16px;background:#FBFCFA;line-height:1.5}
+@media(max-width:620px){.checkgrid{grid-template-columns:1fr}.history{min-height:240px}.moregrid{grid-template-columns:1fr 1fr}.hero{min-height:290px}}
+@media(max-width:390px){.main{padding-left:11px;padding-right:11px}.topbar{padding-left:11px;padding-right:11px}.pagehead h1{font-size:26px}.hero{min-height:278px;padding:17px}.hero h2{font-size:26px}.statcard{min-height:122px;padding:13px}.statcard .num{font-size:26px}.choice4 button{min-height:100px}.obcard{padding:17px;min-height:calc(100dvh - 100px)}.obtitle h1{font-size:28px}.tool{min-height:124px;padding:14px}}
+@media(min-width:621px){.todaygrid{grid-template-columns:1.35fr .65fr;grid-template-rows:1fr 1fr}.hero{grid-column:auto;grid-row:1/3;min-height:520px}.statcard{min-height:0}.main{padding-left:18px;padding-right:18px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
 </style>
 </head>
 <body>
 <div class="app" id="app">
   <header class="topbar">
     <div class="brand"><div class="logo">A+</div><div><b>AfterCare OS</b><small id="brandSub">Recovery, organized.</small></div></div>
-    <button class="iconbtn" id="quickAdd">＋</button>
+    <button class="iconbtn" id="quickAdd" aria-label="Quick add">＋</button>
   </header>
 
   <main class="main">
@@ -289,7 +342,9 @@ body{
           <button class="tool" data-tool="instructions"><span class="ico">📋</span><span><b>Care instructions</b><small>Keep trusted instructions easy to find.</small></span></button>
           <button class="tool" data-tool="contact"><span class="ico">☎️</span><span><b>Important contact</b><small>Who to call when you need help.</small></span></button>
           <button class="tool" data-tool="report"><span class="ico">↗</span><span><b>Recovery report</b><small>Simple summary of your entries.</small></span></button>
-          <button class="tool" data-tool="export"><span class="ico">↓</span><span><b>Export backup</b><small>Download your local data as JSON.</small></span></button>
+          <button class="tool" data-tool="export"><span class="ico">↓</span><span><b>Export backup</b><small>Save a copy of your local data.</small></span></button>
+          <button class="tool" data-tool="import"><span class="ico">↑</span><span><b>Restore backup</b><small>Bring back a previous AfterCare backup.</small></span></button>
+          <button class="tool" data-tool="privacy"><span class="ico">◉</span><span><b>Privacy</b><small>See how your data is stored.</small></span></button>
           <button class="tool reset-tool" data-tool="reset"><span class="ico">↻</span><span><b>Start over</b><small>Clear this device and run onboarding again.</small></span></button>
         </div>
       </div>
@@ -313,10 +368,10 @@ body{
       <div class="card obcard">
         <div class="obtitle"><span class="eyebrow">Welcome</span><h1>You have enough to think about.</h1><p>Set up only what matters now. You can change everything later.</p></div>
         <div class="obform">
-          <input id="obName" placeholder="Your first name">
-          <select id="obType"><option value="Surgery">Surgery</option><option value="Hospital stay">Hospital stay</option><option value="ER visit">ER visit</option><option value="Rehab">Rehab</option></select>
-          <input id="obDate" type="date">
-          <div class="tip">AfterCare OS organizes information you enter. It does not diagnose, prescribe, or replace medical advice.</div>
+          <div class="field compact"><label><span>First name</span></label><input id="obName" autocomplete="given-name" placeholder="Optional"></div>
+          <div class="field compact"><label><span>Recovery type</span></label><select id="obType"><option value="Surgery">Surgery</option><option value="Hospital stay">Hospital stay</option><option value="ER visit">ER visit</option><option value="Rehab">Rehab</option></select></div>
+          <div class="field compact"><label><span>Start date</span></label><input id="obDate" type="date"></div>
+          <div class="tip"><b>Private by default.</b> Your entries stay on this device. AfterCare OS organizes information you enter; it does not diagnose, prescribe, or replace medical advice.</div>
         </div>
         <div class="obactions"><span></span><button class="continue" data-next="2">Continue →</button></div>
       </div>
@@ -348,19 +403,19 @@ body{
   </div>
 </div>
 
-<div class="modal" id="modal"><div class="backdrop" id="backdrop"></div><div class="sheet"><div class="sheethead"><h3 id="sheetTitle">Add</h3><button class="close" id="closeSheet">×</button></div><div id="sheetBody"></div></div></div>
+<div class="modal" id="modal"><div class="backdrop" id="backdrop"></div><div class="sheet"><div class="sheethead"><h3 id="sheetTitle">Add</h3><button class="close" id="closeSheet" aria-label="Close">×</button></div><div id="sheetBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 const KEY="aftercare-v2";
 const todayISO=()=>new Date().toISOString().slice(0,10);
 const uid=p=>p+"-"+Math.random().toString(36).slice(2,9);
-const defaultState=()=>({version:2,profile:null,modules:["meds","tasks","checkins","visits"],tasks:[],meds:[],visits:[],questions:[],checkins:[],notes:{instructions:"",contact:""},ui:{tab:"tasks"}});
+const defaultState=()=>({version:3,profile:null,modules:["meds","tasks","checkins","visits"],tasks:[],meds:[],visits:[],questions:[],checkins:[],notes:{instructions:"",contact:""},ui:{tab:"tasks"}});
 let state=(()=>{try{return {...defaultState(),...JSON.parse(localStorage.getItem(KEY)||"null")}}catch(e){return defaultState()}})();
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600)}
-function greeting(){const h=new Date().getHours();return h<12?"Good morning.":h<18?"Good afternoon.":"Good evening."}
+function greeting(){const h=new Date().getHours();const g=h<12?"Good morning":h<18?"Good afternoon":"Good evening";const n=state.profile?.name&&state.profile.name!=="You"?`, ${state.profile.name}`:"";return g+n+"."}
 function day(){if(!state.profile?.startDate)return 1;return Math.max(1,Math.floor((new Date(todayISO())-new Date(state.profile.startDate))/86400000)+1)}
 function fmtDate(d){if(!d)return "—";try{return new Date(d).toLocaleDateString([], {month:"short",day:"numeric"})}catch{return d}}
 function fmtDT(d){if(!d)return "—";try{return new Date(d).toLocaleString([], {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}catch{return d}}
@@ -413,7 +468,7 @@ $("#quickAdd").onclick=()=>openQuick();
 function renderCheck(){
   const latest=state.checkins[0];
   $("#latestPain").textContent=latest?latest.pain:"—";$("#latestEnergy").textContent=latest?latest.energy:"—";$("#checkCount").textContent=state.checkins.length;
-  $("#checkList").innerHTML=state.checkins.slice(0,6).map(c=>`<div class="item"><span>♡</span><div><b>${esc(fmtDT(c.time))}</b><small>Pain ${c.pain}/10 · ${esc(c.energy)} · ${esc(c.function)}</small></div><span></span></div>`).join("")||`<div class="empty">No check-ins yet.</div>`;
+  $("#checkList").innerHTML=state.checkins.slice(0,6).map(c=>`<div class="item"><span>♡</span><div><b>${esc(fmtDT(c.time))}</b><small>Pain ${c.pain}/10 · ${esc(c.energy)} · ${esc(c.function)}${c.note?" · "+esc(c.note):""}</small></div><span></span></div>`).join("")||`<div class="empty">No check-ins yet.</div>`;
 }
 $("#pain").oninput=e=>$("#painOut").textContent=e.target.value+"/10";
 $("#saveCheck").onclick=()=>{state.checkins.unshift({id:uid("c"),time:new Date().toISOString(),pain:Number($("#pain").value),energy:$("#energy").value,function:$("#function").value,note:$("#checkNote").value.trim()});$("#checkNote").value="";save();toast("Check-in saved")};
@@ -432,7 +487,7 @@ function openQuick(){
     <button class="tool q" data-q="visits"><span class="ico">▣</span><span><b>Visit</b><small>Add an appointment.</small></span></button>
     <button class="tool q" data-q="questions"><span class="ico">?</span><span><b>Question</b><small>Save something to ask.</small></span></button>
   </div>`);
-  $$(".q").forEach(b=>b.onclick=()=>openAdd(b.dataset.q));
+  $$(".q").forEach(b=>{if(b.dataset.q!=="questions" && !state.modules.includes(b.dataset.q))b.style.display="none";b.onclick=()=>openAdd(b.dataset.q)});
 }
 function openAdd(tab){
   const forms={
@@ -457,12 +512,21 @@ $$(".tool").forEach(b=>b.onclick=()=>{
   if(t==="instructions")noteTool("Care instructions","instructions","Keep trusted instructions here.");
   if(t==="contact")noteTool("Important contact","contact","Who to call / trusted contact note.");
   if(t==="report")reportTool();
-  if(t==="export"){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="aftercare-backup.json";a.click();URL.revokeObjectURL(a.href)}
+  if(t==="export"){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");const u=URL.createObjectURL(blob);a.href=u;a.download="aftercare-backup.json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),500)}
+  if(t==="import") importTool();
+  if(t==="privacy") openSheet("Privacy",`<div class="card"><span class="eyebrow">Local-first</span><h2 style="margin:8px 0 6px">Your recovery data stays on this device.</h2><p style="font-size:11px;line-height:1.55;color:var(--muted)">AfterCare OS stores the information you enter in your browser on this device. It does not require an account and does not send your entries to a server. Export a backup before clearing browser data or changing devices.</p><div class="tip">Anyone with access to this unlocked device may be able to open the app and see its contents.</div></div>`);
   if(t==="reset"){
     openSheet("Start over",`<div class="card"><div class="tip" style="margin-bottom:12px">This clears the AfterCare OS data stored on this device and starts onboarding again.</div><button class="save" id="confirmReset" style="background:var(--danger)">Clear data & start over</button></div>`);
     setTimeout(()=>{const btn=$("#confirmReset"); if(btn) btn.onclick=()=>{localStorage.removeItem(KEY);location.reload()}},0);
   }
 });
+function importTool(){
+  openSheet("Restore backup",`<div class="card"><div class="tip" style="margin-bottom:12px">Choose an AfterCare OS JSON backup. Restoring replaces the data currently stored on this device.</div><input id="backupFile" type="file" accept="application/json,.json" style="width:100%;margin-bottom:12px"><button class="save" id="restoreBackup">Restore backup</button></div>`);
+  $("#restoreBackup").onclick=()=>{
+    const file=$("#backupFile").files?.[0];if(!file){toast("Choose a backup first");return}
+    const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||typeof data!=="object"||!Array.isArray(data.tasks)||!Array.isArray(data.meds)){throw new Error("Invalid")};state={...defaultState(),...data,version:3};localStorage.setItem(KEY,JSON.stringify(state));closeSheet();render();toast("Backup restored")}catch(e){toast("That file is not a valid AfterCare backup")}};r.readAsText(file);
+  }
+}
 function noteTool(title,key,placeholder){
   openSheet(title,`<div class="card"><div class="field"><textarea id="noteField" placeholder="${placeholder}">${esc(state.notes[key]||"")}</textarea></div><button class="save" id="saveNote">Save</button></div>`);
   $("#saveNote").onclick=()=>{state.notes[key]=$("#noteField").value.trim();closeSheet();save();toast("Saved")}
@@ -487,12 +551,21 @@ $("#finishOb").onclick=()=>{
 }
 $("#obDate").value=todayISO();
 if(state.profile)$("#onboarding").classList.add("hidden");
+function applyModules(){
+  const active=new Set(state.modules||[]);
+  const tabButtons={tasks:"tasks",meds:"meds",visits:"visits"};
+  Object.entries(tabButtons).forEach(([tab,mod])=>{const b=document.querySelector(`#planTabs [data-tab="${tab}"]`);if(b)b.style.display=active.has(mod)?"":"none"});
+  const checkNav=document.querySelector('.nav [data-route="check"]');if(checkNav)checkNav.style.display=active.has("checkins")?"":"none";
+  const visible=[...document.querySelectorAll('.nav button')].filter(b=>b.style.display!=="none");document.querySelector('.nav').style.gridTemplateColumns=`repeat(${visible.length},1fr)`;
+  if(!active.has(state.ui.tab)&&state.ui.tab!=="questions")state.ui.tab=active.has("tasks")?"tasks":active.has("meds")?"meds":active.has("visits")?"visits":"questions";
+}
+const _render=render;render=function(){applyModules();_render()};
 render();
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())).catch(()=>{});
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?release=final-20260906").catch(()=>{}));
 }
-if("caches" in window){
-  caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});
+if("caches" in window && !localStorage.getItem("aftercare-final-cache-migrated")){
+  caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(()=>localStorage.setItem("aftercare-final-cache-migrated","1")).catch(()=>{});
 }
 </script>
 </body>
