@@ -1,12 +1,12 @@
 {
-  "name": "AfterCare OS",
-  "short_name": "AfterCare",
+  "name": "RecoverOS",
+  "short_name": "RecoverOS",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F8FAFC",
-  "theme_color": "#1E3A8A",
-  "description": "A calm, guided recovery organizer for the first 30 days after hospital or surgery.",
+  "theme_color": "#0F172A",
+  "description": "A calm post-operative recovery organizer for patients after discharge.",
   "icons": [
     {
       "src": "./icon-192.png",
