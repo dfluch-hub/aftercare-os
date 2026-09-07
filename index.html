@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1E3A8A">
-<meta name="description" content="A structured recovery pathway for the first 14 days after discharge.">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#6F8FAF">
+<meta name="description" content="A warm, personal recovery organizer for the first days after discharge.">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./assets/recovery.css"><script src="./js/recovery.js" defer></script><title>Aftercare</title>
 </head>
 <body><div class="app">
@@ -10,60 +10,78 @@
   <div class="welcome-shell">
     <div class="brand brand-centered"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div>
     <div class="hero-frame"><img class="hero-photo" src="./assets/recovery-hero.jpg" alt="A person resting comfortably at home" width="1536" height="1024" fetchpriority="high"></div>
-    <div class="welcome-copy"><p class="eyebrow compact">Recovery, made clearer</p><h1 id="welcome-title">Your calm, guided path through recovery.</h1><p class="intro">See what matters today, what comes next, and where to get help.</p></div>
+    <div class="welcome-copy"><p class="eyebrow compact">Recovery, made personal</p><h1 id="welcome-title">Your calm, guided path through recovery.</h1><p class="intro">Your medications, care tasks, appointments, symptoms and questions — in one simple place.</p></div>
     <button class="primary pill full welcome-cta" id="start">Let’s Start <span aria-hidden="true">→</span></button>
-    <p class="footnote">Always follow the instructions from your care team.</p>
+    <p class="footnote">Aftercare organizes what you enter. Always follow your care team’s instructions.</p>
   </div>
 </section>
 
-<section id="onboarding" class="content" hidden aria-labelledby="onboarding-title">
-  <div class="brand"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div><p class="eyebrow">Quick setup</p>
-  <h1 id="onboarding-title" tabindex="-1">Build your recovery pathway.</h1><p class="sub">Start with your discharge details. You can add your own medications, care tasks, and appointments next.</p>
-  <form id="onboarding-form" class="form-stack">
-    <label>First name<input class="control" name="firstName" autocomplete="given-name" maxlength="60" required></label>
-    <label>Recovery pathway<select class="control" name="pathway" required><option value="">Choose a pathway</option><option value="hip">Hip Surgery</option><option value="cardiac">Cardiac Care</option><option value="general">General Surgery</option></select></label>
-    <label>Discharge date<input class="control" name="dischargeDate" type="date" required></label>
-    <button class="primary full">Create My Pathway <span aria-hidden="true">→</span></button>
-  </form>
-  <p class="footnote">Future discharge dates are supported for planned procedures.</p>
+<section id="setup" class="wizard" hidden aria-labelledby="wizard-title">
+  <div class="wizard-top"><div class="brand"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div><span id="wizard-step-label">Step 1 of 3</span></div>
+  <div class="wizard-progress"><span id="wizard-progress"></span></div>
+
+  <section class="wizard-step" id="wizard-1">
+    <p class="eyebrow">About Your Procedure</p><h1 id="wizard-title" tabindex="-1">A few details, then we’ll build your plan.</h1><p class="sub">Nothing is pre-filled. This pathway is based only on what you add.</p>
+    <form id="procedure-form" class="form-stack">
+      <label>First name<input class="control" name="firstName" autocomplete="given-name" maxlength="60" required></label>
+      <label>Procedure / specialty<select class="control" name="procedure" required><option value="">Choose one</option><option>Orthopedic Surgery</option><option>Cardiac Care</option><option>General Surgery</option><option>Emergency / Hospital Stay</option><option>Other</option></select></label>
+      <label>Discharge date<input class="control" name="dischargeDate" type="date" required></label>
+      <button class="primary full">Continue <span aria-hidden="true">→</span></button>
+    </form>
+  </section>
+
+  <section class="wizard-step" id="wizard-2" hidden>
+    <p class="eyebrow">Your Medications</p><h1>Add only what you were prescribed.</h1><p class="sub">You can add as many as you need, or skip this step.</p>
+    <div id="wizard-med-list" class="setup-list"></div>
+    <button class="secondary full" id="wizard-add-med" type="button">+ Add Medication</button>
+    <div class="wizard-actions"><button class="text-button" data-wizard-back="1">Back</button><button class="primary" id="to-care" type="button">Continue</button></div>
+  </section>
+
+  <section class="wizard-step" id="wizard-3" hidden>
+    <p class="eyebrow">Care & Milestones</p><h1>What else needs to happen?</h1><p class="sub">Add dressing changes, physio, care tasks or follow-up appointments. You can also skip this.</p>
+    <div id="wizard-care-list" class="setup-list"></div>
+    <button class="secondary full" id="wizard-add-care" type="button">+ Add Care Task or Appointment</button>
+    <div class="wizard-actions"><button class="text-button" data-wizard-back="2">Back</button><button class="primary" id="complete-setup" type="button">Complete Setup & Build My Timeline →</button></div>
+  </section>
 </section>
 
 <div id="workspace" hidden>
-<header><div class="brand"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div><button class="icon-text" data-route="care-team" aria-label="Open Care Team"><span class="icon" data-icon="phone"></span><span>Care Team</span></button></header>
+<header><div class="brand"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div><button class="icon-text" data-route="care-team"><span class="icon" data-icon="phone"></span><span>Care Team</span></button></header>
 <main class="content">
 <section id="today" aria-labelledby="today-title">
-  <div class="day-hero"><p class="eyebrow" id="recovery-day"></p><div class="day-row"><div class="day-copy"><h1 id="today-title" tabindex="-1"></h1><p class="sub" id="today-date"></p></div><button class="add-item-button" id="add-item" type="button" aria-label="Add task or medication">+ Add Item</button></div></div>
+  <div class="day-hero"><p class="eyebrow" id="recovery-day"></p><div class="day-row"><div class="day-copy"><h1 id="today-title" tabindex="-1"></h1><p class="sub" id="today-date"></p></div><button class="add-item-button" id="add-item" type="button">+ Add Item</button></div></div>
+  <section class="encouragement"><strong id="encouragement-title"></strong><span id="encouragement-copy"></span></section>
   <div class="date-strip-wrap"><button class="date-arrow" id="prev-day" aria-label="Previous day">‹</button><div class="date-strip" id="date-strip" role="listbox" aria-label="Recovery days"></div><button class="date-arrow" id="next-day" aria-label="Next day">›</button></div>
-  <div class="preview-link-wrap" id="preview-link-wrap" hidden><button class="preview-link" id="jump-discharge">Preview Recovery Day 1 →</button></div>
-  <div class="progress-summary"><div><strong id="progress-text">0 of 0 items completed</strong><span id="progress-help">Your own schedule appears here.</span></div><div class="progress-ring" id="progress-ring" aria-label="Daily progress"><span id="progress-count">0/0</span></div></div>
-  <div class="progress-track"><span id="progress-bar"></span></div>
+  <div class="progress-summary"><div><strong id="progress-text">0 of 0 items completed</strong><span>Your personal timeline</span></div><div class="progress-ring" id="progress-ring"><span id="progress-count">0/0</span></div></div><div class="progress-track"><span id="progress-bar"></span></div>
   <ol class="timeline" id="pathway-stream"></ol>
+
+  <div class="quick-tools"><button id="log-prn" class="soft-action" type="button">💊 Log “As Needed” Medication</button></div>
+
   <section class="health-card" aria-labelledby="health-title"><p class="eyebrow compact">Daily Health Check</p><h2 id="health-title">How are you feeling right now?</h2><div class="health-actions"><button data-health="fine" class="health fine">Feeling Fine</button><button data-health="mild" class="health mild">Mild Discomfort</button><button data-health="critical" class="health critical">Critical Symptoms</button></div><p class="health-saved" id="health-saved" hidden></p></section>
+
+  <section class="question-card"><div><p class="eyebrow compact">Questions for Doctor</p><h2>Don’t forget what you wanted to ask.</h2></div><textarea id="doctor-questions" class="note-control" rows="3" placeholder="e.g. When can I drive again?"></textarea><button class="secondary full" id="save-questions" type="button">Save Questions</button></section>
+
   <button class="support" data-route="care-team"><span><strong>Your care team, close by</strong><small>Call the number you saved from your hospital or clinic.</small></span><span class="icon" data-icon="phone"></span></button>
 </section>
 
-<section id="care-team" hidden aria-labelledby="care-title"><p class="eyebrow">Your support network</p><h1 id="care-title" tabindex="-1">Care Team</h1><p class="sub">Save the contact provided by your hospital or clinic.</p>
-<form id="care-form" class="form-stack"><label>Care team name<input class="control" name="teamName" maxlength="100" autocomplete="organization" required></label><label>Phone number<input class="control" name="phone" type="tel" autocomplete="tel" maxlength="30" required></label><button class="primary full">Save contact</button></form><a id="call-team" class="secondary full call-link" hidden>Call care team</a><p class="hint">Aftercare does not send messages or monitor your symptoms.</p></section>
+<section id="care-team" hidden aria-labelledby="care-title"><p class="eyebrow">Your support network</p><h1 id="care-title" tabindex="-1">Care Team</h1><p class="sub">Save the contact provided by your hospital or clinic.</p><form id="care-form" class="form-stack"><label>Care team name<input class="control" name="teamName" maxlength="100" autocomplete="organization" required></label><label>Phone number<input class="control" name="phone" type="tel" autocomplete="tel" maxlength="30" required></label><button class="primary full">Save contact</button></form><a id="call-team" class="secondary full call-link" hidden>Call care team</a><p class="hint">Aftercare does not send messages or monitor your symptoms.</p></section>
 
-<section id="profile" hidden aria-labelledby="profile-title"><p class="eyebrow">Your recovery details</p><h1 id="profile-title" tabindex="-1">Profile</h1><p class="sub">Update the details that shape your pathway.</p>
-<form id="profile-form" class="form-stack"><label>First name<input class="control" name="firstName" autocomplete="given-name" maxlength="60" required></label><label>Recovery pathway<select class="control" name="pathway" required><option value="hip">Hip Surgery</option><option value="cardiac">Cardiac Care</option><option value="general">General Surgery</option></select></label><label>Discharge date<input class="control" name="dischargeDate" type="date" required></label><button class="primary full">Save details</button></form>
-<section class="trend-card" aria-labelledby="trend-title"><div class="trend-heading"><div><p class="eyebrow compact">Pain & Symptom Trend</p><h2 id="trend-title">How you’ve been feeling</h2></div></div><div id="trend-list" class="trend-list"></div><p class="hint" id="trend-empty">Your Daily Health Check entries will appear here with date and time.</p></section>
-<p class="hint">Aftercare organizes what you enter. It does not diagnose symptoms or replace your discharge instructions.</p></section>
+<section id="profile" hidden aria-labelledby="profile-title"><p class="eyebrow">Your recovery details</p><h1 id="profile-title" tabindex="-1">Profile</h1><p class="sub">Your plan stays editable as recovery changes.</p>
+<form id="profile-form" class="form-stack"><label>First name<input class="control" name="firstName" autocomplete="given-name" maxlength="60" required></label><label>Procedure / specialty<input class="control" name="procedure" maxlength="100" required></label><label>Discharge date<input class="control" name="dischargeDate" type="date" required></label><button class="primary full">Save details</button></form>
+
+<section class="trend-card" aria-labelledby="trend-title"><p class="eyebrow compact">Recovery Trend</p><h2 id="trend-title">How you’ve been feeling</h2><div id="trend-graph" class="trend-graph"></div><div id="trend-list" class="trend-list"></div><p class="hint" id="trend-empty">Your Daily Health Check entries will appear here.</p></section>
+
+<section class="journal-card"><p class="eyebrow compact">Wound Photo Journal</p><h2>Keep a private visual record.</h2><p class="hint">Photos stay on this device in your browser and are not uploaded by Aftercare.</p><label class="secondary full upload-button">+ Add Wound Photo<input id="wound-photo" type="file" accept="image/*" capture="environment" hidden></label><div id="photo-journal" class="photo-journal"></div></section>
+
+<section class="share-card"><p class="eyebrow compact">Caregiver Share</p><h2>Share a simple progress summary.</h2><p class="hint">You choose when and where to share. Aftercare does not send anything automatically.</p><button class="primary full" id="share-progress" type="button">Share Progress with Family / Doctor</button></section>
+<p class="hint">Aftercare organizes what you enter. It does not diagnose symptoms, recommend treatment, or replace your discharge instructions.</p></section>
 </main>
 <nav class="bottom-nav" aria-label="Main navigation"><button data-route="today" aria-current="page"><span class="icon" data-icon="home"></span><span>Today</span></button><button data-route="care-team"><span class="icon" data-icon="users"></span><span>Care Team</span></button><button data-route="profile"><span class="icon" data-icon="user"></span><span>Profile</span></button></nav>
-</div>
-<p id="status" role="status" hidden></p></div>
+</div><p id="status" role="status" hidden></p></div>
 
-<dialog id="item-dialog" aria-labelledby="item-title"><div class="dialog-heading"><div><p class="eyebrow compact">Add to your timeline</p><h2 id="item-title">New item</h2></div><button class="close" data-close="item-dialog" aria-label="Close">×</button></div>
-<form id="item-form" class="form-stack">
-<label>Type<select class="control" name="type" required><option value="medication">Medication</option><option value="care">Care Task</option><option value="appointment">Appointment</option></select></label>
-<label>Name<input class="control" name="title" maxlength="120" placeholder="e.g. Ibuprofen 400mg" required></label>
-<label>Start date<input class="control" name="startDate" type="date" required></label>
-<label>First time<input class="control" name="time" type="time" value="08:00" required></label>
-<label>Frequency<select class="control" name="frequency" required><option value="once">Once</option><option value="daily">Daily</option><option value="twice">Twice a day</option><option value="three">3 times a day</option></select></label>
-<p class="hint frequency-hint">Twice daily uses 08:00 & 20:00. Three times daily uses 08:00, 14:00 & 20:00. Use the schedule prescribed or instructed by your care team.</p>
-<button class="primary full">Add to Timeline</button></form></dialog>
+<dialog id="item-dialog" aria-labelledby="item-title"><div class="dialog-heading"><div><p class="eyebrow compact">Add to your timeline</p><h2 id="item-title">New item</h2></div><button class="close" data-close="item-dialog" aria-label="Close">×</button></div><form id="item-form" class="form-stack"><label>Type<select class="control" name="type" required><option value="medication">Medication</option><option value="care">Care Task</option><option value="appointment">Appointment</option></select></label><label>Name<input class="control" name="title" maxlength="120" required></label><label id="dose-label">Dose / strength <span class="optional">(optional)</span><input class="control" name="dose" maxlength="80" placeholder="e.g. 400 mg"></label><label>Start date<input class="control" name="startDate" type="date" required></label><label>Start time<input class="control" name="time" type="time" required></label><label>Repeat<select class="control" name="frequency" required><option value="once">Once</option><option value="daily">Daily</option><option value="twice">2x daily</option><option value="three">3x daily</option><option value="q6h">Every 6 hours</option></select></label><p class="hint">Use only the schedule provided by your care team. Aftercare does not calculate or recommend a dose.</p><button class="primary full">Add to Timeline</button></form></dialog>
 
-<dialog id="task-dialog" aria-labelledby="task-title"><div class="dialog-heading"><h2 id="task-title">Item details</h2><button class="close" data-close="task-dialog" aria-label="Close">×</button></div><div id="task-dialog-body"></div><button class="primary full" data-close="task-dialog">Got it</button></dialog>
+<dialog id="prn-dialog" aria-labelledby="prn-title"><div class="dialog-heading"><div><p class="eyebrow compact">As Needed Medication</p><h2 id="prn-title">Log a medication you already took</h2></div><button class="close" data-close="prn-dialog" aria-label="Close">×</button></div><form id="prn-form" class="form-stack"><label>Medication name<input class="control" name="title" maxlength="120" required></label><label>Dose / strength <span class="optional">(optional)</span><input class="control" name="dose" maxlength="80"></label><label>Time taken<input class="control" name="time" type="time" required></label><button class="primary full">Log Medication</button></form><p class="hint">This is a record only. Follow the PRN instructions and limits given by your prescriber.</p></dialog>
+
 <dialog id="critical-dialog" aria-labelledby="critical-title"><div class="dialog-heading"><h2 id="critical-title">Get help now</h2><button class="close" data-close="critical-dialog" aria-label="Close">×</button></div><p>Aftercare cannot assess urgency or diagnose what is happening.</p><p>If you believe this is a medical emergency, call 911 now. Otherwise, contact your care team.</p><a class="primary full call-link" href="tel:911">Call 911</a><button id="critical-care" class="secondary full">Call Care Team</button></dialog>
 </body></html>
