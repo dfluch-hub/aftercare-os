@@ -6,13 +6,13 @@
 <link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./assets/recovery.css"><script src="./js/recovery.js" defer></script><title>Aftercare</title>
 </head>
 <body><div class="app">
-<section id="welcome" aria-labelledby="welcome-title">
-  <img class="hero-photo" src="./assets/recovery-hero.jpg" alt="A person resting comfortably at home" width="1536" height="1024" fetchpriority="high">
-  <div class="welcome-body"><div class="brand"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div>
-    <p class="eyebrow compact">Your first 14 days, organized</p><h1 id="welcome-title">Your recovery,<br>one clear step at a time.</h1>
-    <p class="intro">A calm day-by-day pathway for medications, care tasks, follow-ups, and symptom check-ins.</p>
-    <button class="primary full" id="start">Set Up My Recovery Pathway <span aria-hidden="true">→</span></button>
-    <p class="footnote">Aftercare organizes your plan. Always follow the instructions from your care team.</p>
+<section id="welcome" class="welcome-screen" aria-labelledby="welcome-title">
+  <div class="welcome-shell">
+    <div class="brand brand-centered"><span class="brand-mark" aria-hidden="true">+</span>Aftercare</div>
+    <div class="hero-frame"><img class="hero-photo" src="./assets/recovery-hero.jpg" alt="A person resting comfortably at home" width="1536" height="1024" fetchpriority="high"></div>
+    <div class="welcome-copy"><p class="eyebrow compact">Recovery, made clearer</p><h1 id="welcome-title">Your calm, guided path through recovery.</h1><p class="intro">See what matters today, what comes next, and where to get help.</p></div>
+    <button class="primary pill full welcome-cta" id="start">Let’s Start <span aria-hidden="true">→</span></button>
+    <p class="footnote">Always follow the instructions from your care team.</p>
   </div>
 </section>
 
@@ -34,6 +34,7 @@
 <section id="today" aria-labelledby="today-title">
   <div class="day-hero"><p class="eyebrow" id="recovery-day"></p><div class="day-row"><div><h1 id="today-title" tabindex="-1"></h1><p class="sub" id="today-date"></p></div><div class="progress-ring" id="progress-ring" aria-label="Daily progress"><span id="progress-count">0/0</span></div></div></div>
   <div class="date-strip-wrap"><button class="date-arrow" id="prev-day" aria-label="Previous day">‹</button><div class="date-strip" id="date-strip" role="listbox" aria-label="Recovery days"></div><button class="date-arrow" id="next-day" aria-label="Next day">›</button></div>
+  <div class="preview-link-wrap" id="preview-link-wrap" hidden><button class="preview-link" id="jump-discharge">Preview Recovery Day 1 →</button></div>
   <div class="progress-copy"><strong id="progress-text">0 of 0 milestones completed</strong><div class="progress-track"><span id="progress-bar"></span></div></div>
   <ol class="timeline" id="pathway-stream"></ol>
   <section class="health-card" aria-labelledby="health-title"><p class="eyebrow compact">Daily Health Check</p><h2 id="health-title">How are you feeling right now?</h2><div class="health-actions"><button data-health="fine" class="health fine">Feeling Fine</button><button data-health="mild" class="health mild">Mild Discomfort</button><button data-health="critical" class="health critical">Critical Symptoms</button></div><p class="health-saved" id="health-saved" hidden></p></section>
