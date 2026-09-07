@@ -1,5 +1,6 @@
 'use strict';
 const STORAGE_KEY='aftercare.pathway.v5';
+const INTRO_KEY='aftercare.welcome.clinical.v1';
 const $=id=>document.getElementById(id);
 const routes=['today','medications','care-team'];
 const iconSvg={
@@ -57,7 +58,7 @@ function callCareTeam(){const n=(state.care.phone||'').replace(/[^+\d]/g,'');if(
 function renderQuickMeds(){const wrap=$('quick-med-list');wrap.replaceChildren();const meds=state.items.filter(x=>x.type==='medication').slice(0,3);meds.forEach(item=>{const b=document.createElement('button');b.className='quick-med';b.type='button';b.textContent=item.dose?`${item.title} · ${item.dose}`:item.title;b.onclick=()=>{const form=$('prn-form');form.elements.title.value=item.title;form.elements.dose.value=item.dose||''};wrap.append(b)});const custom=document.createElement('button');custom.className='quick-med';custom.type='button';custom.textContent='Custom medication';custom.onclick=()=>{const form=$('prn-form');form.elements.title.value='';form.elements.dose.value='';form.elements.title.focus()};wrap.append(custom)}
 function openPrnSheet(){const form=$('prn-form');form.reset();form.elements.time.value=new Date().toTimeString().slice(0,5);renderQuickMeds();$('prn-sheet').showModal()}
 
-$('start').onclick=()=>{showScreen('setup');showWizard(1)};
+$('start').onclick=()=>{localStorage.setItem(INTRO_KEY,'1');showScreen('setup');showWizard(1)};
 $('procedure-form').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,firstName=f.elements.firstName.value.trim(),procedure=f.elements.procedure.value,dischargeDate=f.elements.dischargeDate.value;if(!firstName||!procedure||!Number.isFinite(calendarDay(dischargeDate)))return notice('Complete all procedure details.');state.profile={firstName,procedure,dischargeDate};showWizard(2)};
 $('wizard-add-med').onclick=()=>openItemDialog('medication',true);$('wizard-add-care').onclick=()=>openItemDialog('care',true);$('to-care').onclick=()=>showWizard(3);$('skip-meds').onclick=()=>showWizard(3);document.querySelectorAll('[data-wizard-back]').forEach(b=>b.onclick=()=>showWizard(Number(b.dataset.wizardBack)));
 function completeSetup(){state.onboarded=true;selectedDate=localDate();save();showScreen('workspace');navigate('today')}
@@ -70,5 +71,12 @@ document.querySelectorAll('[data-pain]').forEach(b=>b.onclick=()=>savePain(Numbe
 $('call-surgeon').onclick=callCareTeam;$('care-now').onclick=callCareTeam;$('care-edit-toggle').onclick=()=>{$('care-edit-wrap').hidden=!$('care-edit-wrap').hidden};
 $('care-form').onsubmit=e=>{e.preventDefault();const teamName=e.currentTarget.elements.teamName.value.trim(),phone=e.currentTarget.elements.phone.value.trim();if(!teamName||!phone)return notice('Enter a care team name and phone number.');state.care={teamName,phone};save('Care team saved');$('care-edit-wrap').hidden=true;renderCare()};
 document.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route));document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-if(state.onboarded){showScreen('workspace');navigate('today')}else showScreen('welcome');
+
+const introSeen=localStorage.getItem(INTRO_KEY)==='1';
+if(!introSeen){
+  showScreen('welcome');
+  $('start').textContent=state.onboarded?'Continue to Aftercare':'Set up my recovery';
+  $('start').onclick=()=>{localStorage.setItem(INTRO_KEY,'1');if(state.onboarded){showScreen('workspace');navigate('today')}else{showScreen('setup');showWizard(1)}};
+}else if(state.onboarded){showScreen('workspace');navigate('today')}else showScreen('welcome');
+
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
