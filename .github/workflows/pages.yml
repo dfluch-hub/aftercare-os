@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -23,29 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Apply compact onboarding polish
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text()
-          marker = '/* MEND compact onboarding v1 */'
-          if marker not in s:
-              css = '''\n/* MEND compact onboarding v1 */\n.setupCard{padding:18px}\n.setupScreen .fb{margin-top:14px}\n.setupScreen .fb:first-child{margin-top:0}\n.setupScreen .label{font-size:12px;font-weight:650;color:#334155;margin-bottom:6px}\n.setupScreen .field{height:44px;border-radius:12px;background:rgba(248,250,252,.58);padding:0 14px;font-size:16px!important}\n.setupScreen .field.hasIcon{padding-left:40px}\n.setupScreen .setupInputIcon{left:14px;width:16px;height:16px}\n.setupScreen .setupInputIcon svg{width:16px;height:16px}\n.setupScreen .procGrid{gap:10px}\n.setupScreen .proc{height:48px;min-height:48px;padding:8px 12px;border-radius:12px;gap:9px;font-size:12px;font-weight:500}\n.setupScreen .procIcon{width:24px;height:24px;flex:0 0 24px;border-radius:8px}\n.setupScreen .procIcon svg{width:14px;height:14px}\n.setupScreen .proc.active{border:1.5px solid #2563EB;background:rgba(239,246,255,.68);color:#1E3A8A;font-weight:650}\n.setupScreen .dateControl{height:44px;border-radius:12px;background:#fff}\n.setupScreen .dateVisual{padding:0 14px;gap:10px;font-size:14px;font-weight:600}\n.setupScreen .dateVisual svg{width:16px;height:16px;flex:0 0 16px}\n.setupScreen .dateChevron{display:none}\n.setupScreen .start{height:48px;border-radius:12px;font-size:14px;font-weight:650;margin-top:14px;box-shadow:0 2px 6px rgba(37,99,235,.14)}\n'''
-              s = s.replace('</style>', css + '\n</style>', 1)
-              p.write_text(s)
-          PY
-
-      - name: Commit compact onboarding source
-        run: |
-          if ! git diff --quiet -- index.html; then
-            git config user.name "dfluch-hub"
-            git config user.email "d.fluch@gmx.at"
-            git add index.html
-            git commit -m "Compact MEND onboarding proportions"
-            git push
-          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
