@@ -1,4 +1,4 @@
-const CACHE_NAME='mend-v1.0.5';
+const CACHE_NAME='mend-v1.0.6';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const UI_POLISH=`<style id="mend-date-polish">
 .dateControl{height:46px!important;border:1px solid #E2E8F0!important;border-radius:14px!important;background:#fff!important;box-shadow:0 1px 2px rgba(15,23,42,.02)!important}
@@ -6,6 +6,9 @@ const UI_POLISH=`<style id="mend-date-polish">
 .dateVisual{gap:9px!important;padding:0 14px!important;font-size:16px!important;font-weight:500!important;color:#1E293B!important}
 .dateVisual svg{width:18px!important;height:18px!important;flex:0 0 18px!important;stroke:#94A3B8!important}
 .dateChevron{display:none!important}
+.setupScreen .dateControl{height:44px!important;border-radius:12px!important}
+.setupScreen .dateVisual{gap:10px!important;padding:0 14px!important;font-size:14px!important;font-weight:600!important}
+.setupScreen .dateVisual svg{width:16px!important;height:16px!important;flex:0 0 16px!important}
 #itemForm .fb{margin-top:10px!important}
 #itemForm .label{margin-bottom:5px!important}
 #itemForm .quickChips{margin-top:7px!important;gap:7px!important}
