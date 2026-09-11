@@ -1,4 +1,4 @@
-const CACHE_NAME='mend-v1.0.1';
+const CACHE_NAME='mend-v1.0.2';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',event=>{
