@@ -1,11 +1,11 @@
 {
   "name": "MEND",
   "short_name": "MEND",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F5F0E8",
-  "theme_color": "#F5F0E8",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
   "description": "A calm post-operative recovery organizer for patients after discharge.",
   "icons": [
     {
