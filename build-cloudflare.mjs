@@ -7,7 +7,8 @@ const files = [
   'icon-512.png',
   'icon.svg',
   'splash.svg',
-  'sw.js'
+  'sw.js',
+  'release-fixes.js'
 ];
 
 await rm('dist', { recursive: true, force: true });
