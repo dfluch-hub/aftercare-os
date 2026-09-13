@@ -1,13 +1,15 @@
 {
+  "id": "./",
   "name": "MEND - Recovery Companion",
   "short_name": "MEND",
+  "description": "A calm post-operative recovery organizer for patients after discharge.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#FFFFFF",
   "theme_color": "#FFFFFF",
-  "description": "A calm post-operative recovery organizer for patients after discharge.",
+  "lang": "en",
   "categories": ["health", "medical", "productivity"],
   "icons": [
     {
