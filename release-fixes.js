@@ -2,6 +2,29 @@
 (function(){
 'use strict';
 
+/* PWA head compatibility for iOS/iPadOS and Android. */
+(function ensurePwaHead(){
+  if(!document.querySelector('link[rel="apple-touch-icon"]')){
+    const icon=document.createElement('link');
+    icon.rel='apple-touch-icon';
+    icon.href='./icon-512.png';
+    document.head.appendChild(icon);
+  }
+  if(!document.querySelector('link[rel="icon"]')){
+    const icon=document.createElement('link');
+    icon.rel='icon';
+    icon.type='image/svg+xml';
+    icon.href='./icon.svg';
+    document.head.appendChild(icon);
+  }
+  if(!document.querySelector('meta[name="mobile-web-app-capable"]')){
+    const meta=document.createElement('meta');
+    meta.name='mobile-web-app-capable';
+    meta.content='yes';
+    document.head.appendChild(meta);
+  }
+})();
+
 const DEMO={
 lovenox:{match:i=>i&&i.type==='med'&&i.time==='08:00'&&i.name==='Lovenox 40mg'&&['1 injection subcutaneous','1 Spritze subkutan'].includes(i.detail||''),en:{name:'Lovenox 40mg',detail:'1 injection subcutaneous'},de:{name:'Lovenox 40mg',detail:'1 Spritze subkutan'}},
 ice:{match:i=>i&&i.type==='care'&&i.time==='10:00'&&['Ice Pack','Kühlpack'].includes(i.name)&&['20 min cooling','20 Min kühlen'].includes(i.detail||''),en:{name:'Ice Pack',detail:'20 min cooling'},de:{name:'Kühlpack',detail:'20 Min kühlen'}},
