@@ -1,4 +1,4 @@
-const APP_VERSION='v1.0.2';
+const APP_VERSION='v1.0.3';
 const CACHE_NAME='mend-'+APP_VERSION;
 const CORE=[
   './',
@@ -57,7 +57,7 @@ self.addEventListener('fetch',event=>{
     const cached=await caches.match(request);
     if(cached)return cached;
     try{
-      const network=await fetch(request);
+      const network=await fetch(request,{cache:'no-store'});
       if(network&&network.ok){
         const cache=await caches.open(CACHE_NAME);
         cache.put(request,network.clone());
