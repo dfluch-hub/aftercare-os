@@ -2,6 +2,12 @@
 (function(){
 'use strict';
 
+/* New recovery plans must start empty. The user adds their own medication,
+   care routines and appointments; MEND never pre-populates medical tasks. */
+if(typeof defaultState==='function'){
+  defaultState=function(){return{items:[]}};
+}
+
 /* PWA head compatibility for iOS/iPadOS and Android. */
 (function ensurePwaHead(){
   if(!document.querySelector('link[rel="apple-touch-icon"]')){
@@ -33,6 +39,20 @@ walk:{match:i=>i&&i.type==='care'&&i.time==='16:00'&&['Walking Exercise','Kurzer
 followup:{match:i=>i&&i.type==='appt'&&i.time==='19:00'&&['Follow-up Call','Kontrollanruf'].includes(i.name)&&['Check in with clinic','Klinik kontaktieren'].includes(i.location||''),en:{name:'Follow-up Call',location:'Check in with clinic'},de:{name:'Kontrollanruf',location:'Klinik kontaktieren'}}};
 function tagKnownDemoItems(){if(typeof state==='undefined'||!state||!Array.isArray(state.items))return false;let changed=false;state.items.forEach(item=>{if(item._mendDemoKey||item._mendUserCreated)return;for(const [key,cfg] of Object.entries(DEMO)){if(cfg.match(item)){item._mendDemoKey=key;changed=true;break}}});return changed}
 function localizeDemoItems(){if(typeof state==='undefined'||!state||!Array.isArray(state.items)||typeof lang==='undefined')return false;let changed=tagKnownDemoItems();state.items.forEach(item=>{const cfg=DEMO[item._mendDemoKey];if(!cfg)return;const copy=cfg[lang==='de'?'de':'en'];Object.entries(copy).forEach(([k,v])=>{if(item[k]!==v){item[k]=v;changed=true}})});if(changed&&typeof save==='function')save();return changed}
+
+/* Remove the old five-item sample timeline once, without touching genuine user data. */
+(function migrateDemoTimeline(){
+  if(typeof state==='undefined'||!state||!Array.isArray(state.items))return;
+  const key='mend_empty_timeline_migration_v1';
+  if(localStorage.getItem(key)==='1')return;
+  tagKnownDemoItems();
+  const demoKeys=new Set(state.items.map(i=>i._mendDemoKey).filter(Boolean));
+  if(['lovenox','ice','tylenol','walk','followup'].every(k=>demoKeys.has(k))){
+    state.items=state.items.filter(i=>!i._mendDemoKey);
+    if(typeof save==='function')save();
+  }
+  localStorage.setItem(key,'1');
+})();
 
 /* Simple welcome is the first screen of every genuinely unconfigured MEND installation. */
 if(typeof user!=='undefined'&&!user){
