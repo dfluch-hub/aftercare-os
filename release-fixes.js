@@ -1,70 +1,95 @@
-/* MEND production patch */
+/* MEND production stability patch — Etsy launch readiness */
 (function(){
 'use strict';
 
-/* Always start new recovery plans empty. */
-if(typeof defaultState==='function') defaultState=function(){return{items:[]}};
+/* New recovery plans must start empty. The user adds their own medication,
+   care routines and appointments; MEND never pre-populates medical tasks. */
+if(typeof defaultState==='function'){
+  defaultState=function(){return{items:[]}};
+}
 
-/* PWA head compatibility. */
-(function(){
-  if(!document.querySelector('link[rel="apple-touch-icon"]')){const l=document.createElement('link');l.rel='apple-touch-icon';l.href='./icon-512.png';document.head.appendChild(l)}
-  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.href='./icon.svg';document.head.appendChild(l)}
+/* PWA head compatibility for iOS/iPadOS and Android. */
+(function ensurePwaHead(){
+  if(!document.querySelector('link[rel="apple-touch-icon"]')){
+    const icon=document.createElement('link');
+    icon.rel='apple-touch-icon';
+    icon.href='./icon-512.png';
+    document.head.appendChild(icon);
+  }
+  if(!document.querySelector('link[rel="icon"]')){
+    const icon=document.createElement('link');
+    icon.rel='icon';
+    icon.type='image/svg+xml';
+    icon.href='./icon.svg';
+    document.head.appendChild(icon);
+  }
+  if(!document.querySelector('meta[name="mobile-web-app-capable"]')){
+    const meta=document.createElement('meta');
+    meta.name='mobile-web-app-capable';
+    meta.content='yes';
+    document.head.appendChild(meta);
+  }
 })();
 
-/* Remove the old sample timeline once. */
-(function(){
-  if(typeof state==='undefined'||!state||!Array.isArray(state.items)) return;
-  const key='mend_empty_timeline_migration_v2';
-  if(localStorage.getItem(key)==='1') return;
-  const demoNames=new Set(['Lovenox 40mg','Tylenol 500mg','Ice Pack','Kühlpack','Walking Exercise','Kurzer Spaziergang','Follow-up Call','Kontrollanruf']);
-  const hits=state.items.filter(i=>demoNames.has(i.name));
-  if(hits.length>=5){state.items=state.items.filter(i=>!demoNames.has(i.name));if(typeof save==='function')save()}
+const DEMO={
+lovenox:{match:i=>i&&i.type==='med'&&i.time==='08:00'&&i.name==='Lovenox 40mg'&&['1 injection subcutaneous','1 Spritze subkutan'].includes(i.detail||''),en:{name:'Lovenox 40mg',detail:'1 injection subcutaneous'},de:{name:'Lovenox 40mg',detail:'1 Spritze subkutan'}},
+ice:{match:i=>i&&i.type==='care'&&i.time==='10:00'&&['Ice Pack','Kühlpack'].includes(i.name)&&['20 min cooling','20 Min kühlen'].includes(i.detail||''),en:{name:'Ice Pack',detail:'20 min cooling'},de:{name:'Kühlpack',detail:'20 Min kühlen'}},
+tylenol:{match:i=>i&&i.type==='med'&&i.time==='13:00'&&i.name==='Tylenol 500mg'&&['1 tablet','1 Tablette'].includes(i.detail||''),en:{name:'Tylenol 500mg',detail:'1 tablet'},de:{name:'Tylenol 500mg',detail:'1 Tablette'}},
+walk:{match:i=>i&&i.type==='care'&&i.time==='16:00'&&['Walking Exercise','Kurzer Spaziergang'].includes(i.name)&&['10 min gentle walk','10 Min locker gehen'].includes(i.detail||''),en:{name:'Walking Exercise',detail:'10 min gentle walk'},de:{name:'Kurzer Spaziergang',detail:'10 Min locker gehen'}},
+followup:{match:i=>i&&i.type==='appt'&&i.time==='19:00'&&['Follow-up Call','Kontrollanruf'].includes(i.name)&&['Check in with clinic','Klinik kontaktieren'].includes(i.location||''),en:{name:'Follow-up Call',location:'Check in with clinic'},de:{name:'Kontrollanruf',location:'Klinik kontaktieren'}}};
+function tagKnownDemoItems(){if(typeof state==='undefined'||!state||!Array.isArray(state.items))return false;let changed=false;state.items.forEach(item=>{if(item._mendDemoKey||item._mendUserCreated)return;for(const [key,cfg] of Object.entries(DEMO)){if(cfg.match(item)){item._mendDemoKey=key;changed=true;break}}});return changed}
+function localizeDemoItems(){if(typeof state==='undefined'||!state||!Array.isArray(state.items)||typeof lang==='undefined')return false;let changed=tagKnownDemoItems();state.items.forEach(item=>{const cfg=DEMO[item._mendDemoKey];if(!cfg)return;const copy=cfg[lang==='de'?'de':'en'];Object.entries(copy).forEach(([k,v])=>{if(item[k]!==v){item[k]=v;changed=true}})});if(changed&&typeof save==='function')save();return changed}
+
+/* Remove the old five-item sample timeline once, without touching genuine user data. */
+(function migrateDemoTimeline(){
+  if(typeof state==='undefined'||!state||!Array.isArray(state.items))return;
+  const key='mend_empty_timeline_migration_v1';
+  if(localStorage.getItem(key)==='1')return;
+  tagKnownDemoItems();
+  const demoKeys=new Set(state.items.map(i=>i._mendDemoKey).filter(Boolean));
+  if(['lovenox','ice','tylenol','walk','followup'].every(k=>demoKeys.has(k))){
+    state.items=state.items.filter(i=>!i._mendDemoKey);
+    if(typeof save==='function')save();
+  }
   localStorage.setItem(key,'1');
 })();
 
-function isDE(){return typeof lang!=='undefined'&&lang==='de'}
-function setWelcome(){
-  const title=document.getElementById('welcomeTitle'),sub=document.getElementById('welcomeSub'),btn=document.getElementById('getStarted');
-  if(title)title.textContent=isDE()?'Willkommen bei MEND':'Welcome to MEND';
-  if(sub)sub.textContent=isDE()?'Dein persönlicher Begleiter nach einer Operation. Organisiere Medikamente, Pflege und Termine an einem ruhigen Ort.':'Your personal companion after surgery. Keep medications, care and appointments organized in one calm place.';
-  if(btn)btn.textContent=isDE()?'Weiter':'Continue';
-  const h=document.querySelector('#welcomeScreen .highlights');if(h)h.style.display='none';
+/* Simple welcome is the first screen of every genuinely unconfigured MEND installation. */
+if(typeof user!=='undefined'&&!user){
+  welcomePassed=false;
+  const welcome=document.getElementById('welcomeScreen');
+  const setup=document.getElementById('setupScreen');
+  if(welcome){welcome.classList.remove('hidden');if(setup)setup.classList.add('hidden')}
 }
+function setWelcomeCopy(){
+ const welcome=document.getElementById('welcomeScreen');if(!welcome)return;
+ const de=typeof lang!=='undefined'&&lang==='de';
+ const title=document.getElementById('welcomeTitle'),sub=document.getElementById('welcomeSub'),button=document.getElementById('getStarted');
+ if(title)title.textContent=de?'Hallo bei MEND':'Welcome to MEND';
+ if(sub)sub.textContent=de?'Dein persönlicher Begleiter für die Zeit nach einer Operation. Behalte Medikamente, Pflege und Termine einfach an einem Ort im Blick.':'Your personal companion after surgery. Keep medications, care and appointments organized in one calm place.';
+ if(button)button.textContent=de?'Weiter':'Continue';
+ const highlights=welcome.querySelector('.highlights');if(highlights)highlights.style.display='none';
+}
+setWelcomeCopy();
+document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click',()=>setTimeout(setWelcomeCopy,0)));
 
-/* Hard-wire onboarding so Continue can never get stuck. */
-const start=document.getElementById('getStarted');
-if(start){start.onclick=function(e){e.preventDefault();welcomePassed=true;const w=document.getElementById('welcomeScreen'),s=document.getElementById('setupScreen');if(w)w.classList.add('hidden');if(s){s.classList.remove('hidden');if(document.getElementById('pdate')&&!document.getElementById('pdate').value)document.getElementById('pdate').value=todayISO();if(typeof syncDateDisplays==='function')syncDateDisplays();}window.scrollTo(0,0)}}
-setWelcome();
-document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{setWelcome();renderRedFlags();renderMorrowTools()},0)));
-
-/* Appointments tab. */
+/* Dedicated Appointments page/tab. */
 const carePage=document.getElementById('carePage');
 if(carePage&&!document.getElementById('apptPage')){const p=document.createElement('section');p.id='apptPage';p.className='page hidden';p.innerHTML='<div class="sectionHead"><h2 id="apptPageTitle"></h2><p id="apptPageSub"></p></div><div id="apptList" class="list"></div><div id="apptEmpty" class="emptyCard hidden"></div>';carePage.after(p)}
 const navGrid=document.querySelector('.navGrid');
 if(navGrid&&!navGrid.querySelector('[data-page="appt"]')){const red=navGrid.querySelector('[data-page="red"]');const b=document.createElement('button');b.className='nav';b.dataset.page='appt';b.innerHTML='<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg><span id="navAppt"></span>';red.before(b)}
 if(navGrid)navGrid.style.gridTemplateColumns='repeat(5,minmax(0,1fr))';
-function appointmentCopy(){const a=document.getElementById('apptPageTitle'),b=document.getElementById('apptPageSub'),c=document.getElementById('apptEmpty'),n=document.getElementById('navAppt');if(a)a.textContent=isDE()?'Termine':'Appointments';if(b)b.textContent=isDE()?'Kontrollen und geplante Termine':'Follow-ups and scheduled appointments';if(c)c.textContent=isDE()?'Für diesen Tag sind keine Termine geplant.':'No appointments scheduled for this day.';if(n)n.textContent=isDE()?'Termine':'Appointments'}
+function appointmentCopy(){const de=typeof lang!=='undefined'&&lang==='de';const x={title:de?'Termine':'Appointments',sub:de?'Kontrollen und geplante Termine':'Follow-ups and scheduled appointments',empty:de?'Für diesen Tag sind keine Termine geplant.':'No appointments scheduled for this day.'};const a=document.getElementById('apptPageTitle'),b=document.getElementById('apptPageSub'),c=document.getElementById('apptEmpty'),n=document.getElementById('navAppt');if(a)a.textContent=x.title;if(b)b.textContent=x.sub;if(c)c.textContent=x.empty;if(n)n.textContent=x.title}
 function wireListRows(root){if(!root)return;root.querySelectorAll('.listItem').forEach(r=>{const id=r.dataset.id,e=r.querySelector('.edit'),d=r.querySelector('.delete');if(e)e.onclick=()=>openEdit(id);if(d)d.onclick=()=>del(id)})}
-if(typeof renderLists==='function')renderLists=function(){const date=dayDate(),meds=state.items.filter(i=>i.date===date&&i.type==='med'),care=state.items.filter(i=>i.date===date&&i.type==='care'),appts=state.items.filter(i=>i.date===date&&i.type==='appt');$('medList').innerHTML=meds.map(listHTML).join('');$('careList').innerHTML=care.map(listHTML).join('');const al=document.getElementById('apptList');if(al)al.innerHTML=appts.map(listHTML).join('');$('medEmpty').classList.toggle('hidden',meds.length>0);$('careEmpty').classList.toggle('hidden',care.length>0);const ae=document.getElementById('apptEmpty');if(ae)ae.classList.toggle('hidden',appts.length>0);wireListRows($('medList'));wireListRows($('careList'));wireListRows(al);appointmentCopy()};
-if(navGrid)navGrid.querySelectorAll('.nav').forEach(b=>{if(b.dataset.page==='appt')b.onclick=()=>{page='appt';document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===page));['today','meds','care','appt','red'].forEach(p=>{const el=document.getElementById(p+'Page');if(el)el.classList.toggle('hidden',p!==page)});$('addBtn').style.display='block';renderLists();renderProgress()}});
-
-/* Functional red flags / concern flow. */
-const CONCERN_KEY='mend_concerns_v2';let concern={cat:'',sev:'',worse:''};
-function copy(){return isDE()?{title:'Warnzeichen',sub:'Wenn sich etwas nicht richtig anfühlt, hilft MEND dir, den nächsten Schritt zu ordnen.',q1:'Was macht dir gerade Sorgen?',q2:'Wie stark ist es?',q3:'Wird es gerade schlimmer?',yes:'Ja',no:'Nein',mild:'Leicht',mid:'Mittel',severe:'Stark',back:'Zurück',save:'Als Notiz speichern',restart:'Neu starten',clinic:'Behandlungsteam anrufen',emergency:'112 anrufen',disc:'MEND stellt keine Diagnose und ersetzt keine medizinische Beratung oder Notfallversorgung.',cats:{pain:'Schmerzen',wound:'Wunde / Blutung',breathing:'Atmung / Kreislauf',fever:'Fieber / Infektzeichen',swelling:'Schwellung',med:'Medikamente / Nebenwirkungen',other:'Etwas anderes'},emTitle:'Bitte sofort medizinische Hilfe holen',emText:'Bei Atemnot, Brustschmerz, Ohnmacht, starker unstillbarer Blutung oder akuter Verschlechterung ruf 112 oder den örtlichen Notruf.',ctTitle:'Bitte jetzt dein Behandlungsteam kontaktieren',ctText:'Deine Angaben sollten zeitnah mit deinem Behandlungsteam besprochen werden.',moTitle:'Beobachten und bei Unsicherheit nachfragen',moText:'MEND kann nicht beurteilen, ob ein Symptom harmlos ist. Kontaktiere dein Behandlungsteam, wenn du unsicher bist, es anhält oder stärker wird.'}:{title:'Red Flags',sub:'If something does not feel right, MEND helps you organize the next step.',q1:'What are you concerned about?',q2:'How strong is it?',q3:'Is it getting worse?',yes:'Yes',no:'No',mild:'Mild',mid:'Moderate',severe:'Severe',back:'Back',save:'Save as note',restart:'Start over',clinic:'Call care team',emergency:'Call 911',disc:'MEND does not diagnose and does not replace medical advice or emergency care.',cats:{pain:'Pain',wound:'Wound / bleeding',breathing:'Breathing / circulation',fever:'Fever / infection signs',swelling:'Swelling',med:'Medication / side effects',other:'Something else'},emTitle:'Please seek medical help now',emText:'For trouble breathing, chest pain, fainting, severe uncontrolled bleeding, or sudden severe worsening, call 911 or your local emergency number.',ctTitle:'Please contact your care team now',ctText:'Your answers should be discussed with your care team promptly.',moTitle:'Monitor and ask if you are unsure',moText:'MEND cannot determine whether a symptom is harmless. Contact your care team if you are unsure, it persists, or it becomes worse.'}}
-function result(){if(concern.cat==='breathing'||concern.sev==='severe')return'em';if(concern.worse==='yes'||concern.sev==='mid'||concern.cat==='wound')return'ct';return'mo'}
-function renderRedFlags(){const root=document.getElementById('redPage');if(!root)return;const c=copy();let body='';if(!concern.cat){body=`<div class="concernQuestion">${c.q1}</div><div class="concernGrid">${Object.entries(c.cats).map(([k,v])=>`<button data-cat="${k}" class="concernChoice">${v}<span>›</span></button>`).join('')}</div>`}else if(!concern.sev){body=`<div class="concernQuestion">${c.q2}</div><div class="concernSegment"><button data-sev="mild">${c.mild}</button><button data-sev="mid">${c.mid}</button><button data-sev="severe">${c.severe}</button></div><button data-back="cat" class="concernBack">← ${c.back}</button>`}else if(!concern.worse){body=`<div class="concernQuestion">${c.q3}</div><div class="concernSegment two"><button data-worse="yes">${c.yes}</button><button data-worse="no">${c.no}</button></div><button data-back="sev" class="concernBack">← ${c.back}</button>`}else{const r=result(),title=r==='em'?c.emTitle:r==='ct'?c.ctTitle:c.moTitle,text=r==='em'?c.emText:r==='ct'?c.ctText:c.moText,phone=(typeof user!=='undefined'&&user&&user.phone)||'';body=`<div class="concernResult ${r}"><h3>${title}</h3><p>${text}</p></div><div class="concernActions">${r==='em'?`<a class="concernEmergency" href="tel:${isDE()?'112':'911'}">${c.emergency}</a>`:''}${phone?`<a class="concernClinic" href="tel:${String(phone).replace(/[^+0-9]/g,'')}">${c.clinic}</a>`:''}<button data-save>${c.save}</button><button data-restart>${c.restart}</button></div>`}
-root.innerHTML=`<div class="sectionHead"><h2>${c.title}</h2><p>${c.sub}</p></div><div class="concernCard">${body}<div class="concernDisclaimer">${c.disc}</div></div>`;
-root.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{concern.cat=b.dataset.cat;renderRedFlags()});root.querySelectorAll('[data-sev]').forEach(b=>b.onclick=()=>{concern.sev=b.dataset.sev;renderRedFlags()});root.querySelectorAll('[data-worse]').forEach(b=>b.onclick=()=>{concern.worse=b.dataset.worse;renderRedFlags()});root.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{if(b.dataset.back==='cat')concern={cat:'',sev:'',worse:''};else concern.sev='';renderRedFlags()});const sv=root.querySelector('[data-save]');if(sv)sv.onclick=()=>{const a=JSON.parse(localStorage.getItem(CONCERN_KEY)||'[]');a.unshift({...concern,at:new Date().toISOString()});localStorage.setItem(CONCERN_KEY,JSON.stringify(a.slice(0,20)));sv.textContent=isDE()?'Gespeichert ✓':'Saved ✓'};const rr=root.querySelector('[data-restart]');if(rr)rr.onclick=()=>{concern={cat:'',sev:'',worse:''};renderRedFlags()}}
-
-/* Morrow Tools brand block in Settings. */
-function renderMorrowTools(){const danger=document.getElementById('dangerTitle')?.closest('.settingsSection');if(!danger)return;let s=document.getElementById('morrowToolsSection');if(!s){s=document.createElement('div');s.id='morrowToolsSection';s.className='settingsSection';danger.before(s)}s.innerHTML=`<h3>MORROW TOOLS</h3><div class="morrowBlock"><b>MEND</b><p>${isDE()?'Ein digitales Recovery-Tool von Morrow Tools – entwickelt für mehr Übersicht, weniger Reibung und ruhigere Genesung im Alltag.':'A digital recovery tool by Morrow Tools — designed for more clarity, less friction and calmer everyday recovery.'}</p><small>${isDE()?'MEND ersetzt keine medizinische Beratung, Diagnose oder Notfallversorgung.':'MEND does not replace medical advice, diagnosis or emergency care.'}</small></div>`}
-
-/* Styling for added features. */
-const st=document.createElement('style');st.textContent=`.concernCard{margin-top:8px;padding:14px;background:#fff;border:1px solid #E2E8F0;border-radius:16px}.concernQuestion{font-size:15px;font-weight:800;margin-bottom:10px}.concernGrid{display:grid;gap:7px}.concernChoice{height:44px;border:1px solid #E2E8F0;background:#fff;border-radius:12px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;color:#0F172A;font-weight:650}.concernSegment{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.concernSegment.two{grid-template-columns:repeat(2,1fr)}.concernSegment button,.concernActions button{min-height:44px;border:1px solid #D7E3F4;background:#F8FBFF;border-radius:12px;font-weight:700;color:#1E3A8A}.concernBack{margin-top:10px;border:0;background:transparent;color:#64748B}.concernResult{padding:14px;border-radius:14px}.concernResult.em{background:#FFF1F2;border:1px solid #FECDD3}.concernResult.ct{background:#FFF7ED;border:1px solid #FED7AA}.concernResult.mo{background:#F0FDF4;border:1px solid #BBF7D0}.concernResult h3{margin:0 0 6px;font-size:15px}.concernResult p{margin:0;color:#475569;font-size:12.5px;line-height:18px}.concernActions{display:grid;gap:8px;margin-top:10px}.concernActions a{display:grid;place-items:center;min-height:46px;border-radius:12px;text-decoration:none;font-weight:800}.concernEmergency{background:#B91C1C;color:#fff}.concernClinic{background:#2563EB;color:#fff}.concernDisclaimer{margin-top:12px;padding-top:10px;border-top:1px solid #EEF2F7;color:#94A3B8;font-size:10.5px;line-height:15px}.morrowBlock{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:13px}.morrowBlock b{font-size:16px;letter-spacing:.08em}.morrowBlock p{font-size:11.5px;line-height:16px;color:#475569;margin:6px 0}.morrowBlock small{font-size:10px;line-height:14px;color:#94A3B8}.welcome{background:linear-gradient(180deg,#fff 0,#F8FBFF 58%,#F8FAFC 100%)}.welcomeLogo{margin-bottom:24px}.welcome .leafLogo{transform:scale(1.35);margin-right:5px}.welcome .brand{font-size:21px;letter-spacing:.1em}.welcome h1{font-size:28px;letter-spacing:-.025em}.welcome p{max-width:315px;margin-top:10px;margin-bottom:28px;line-height:21px}.welcome .getStarted{max-width:340px;margin:0 auto;display:block;box-shadow:0 5px 14px rgba(37,99,235,.15)}`;document.head.appendChild(st);
-
+if(typeof renderLists==='function')renderLists=function(){const date=typeof dayDate==='function'?dayDate():'';const meds=state.items.filter(i=>i.date===date&&i.type==='med'),care=state.items.filter(i=>i.date===date&&i.type==='care'),appts=state.items.filter(i=>i.date===date&&i.type==='appt');$('medList').innerHTML=meds.map(listHTML).join('');$('careList').innerHTML=care.map(listHTML).join('');const al=document.getElementById('apptList');if(al)al.innerHTML=appts.map(listHTML).join('');$('medEmpty').classList.toggle('hidden',meds.length>0);$('careEmpty').classList.toggle('hidden',care.length>0);const ae=document.getElementById('apptEmpty');if(ae)ae.classList.toggle('hidden',appts.length>0);wireListRows($('medList'));wireListRows($('careList'));wireListRows(al);appointmentCopy()};
+document.querySelectorAll('.nav').forEach(b=>{if(b.dataset.page==='appt')b.onclick=()=>{page='appt';document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===page));['today','meds','care','appt','red'].forEach(p=>{const el=document.getElementById(p+'Page');if(el)el.classList.toggle('hidden',p!==page)});$('addBtn').style.display='block';renderLists();renderProgress()}});
 const baseRender=typeof render==='function'?render:null;
-if(baseRender)render=function(){if(page==='appt')page='today';baseRender();appointmentCopy();setWelcome();renderRedFlags();renderMorrowTools()};
+if(baseRender)render=function(){if(page==='appt')page='today';baseRender();appointmentCopy();setWelcomeCopy()};
 
-appointmentCopy();renderRedFlags();renderMorrowTools();
+localizeDemoItems();
+document.querySelectorAll('.langBtn').forEach(btn=>btn.addEventListener('click',()=>setTimeout(()=>{appointmentCopy();if(localizeDemoItems()&&typeof render==='function')render()},0)));
+if(!document.getElementById('privacySection')){const danger=document.getElementById('dangerTitle')?.closest('.settingsSection');if(danger){const section=document.createElement('div');section.className='settingsSection';section.id='privacySection';section.innerHTML='<h3><span class="copy-de">Datenschutz</span><span class="copy-en">Privacy</span></h3><div class="privacyMini"><div class="privacyMiniTop"><span class="privacyDot"></span><span class="copy-de">Lokal & privat</span><span class="copy-en">Local & private</span></div><p><span class="copy-de">Deine Einträge werden ausschließlich im Browserspeicher dieses Geräts gespeichert.</span><span class="copy-en">Your entries are stored only in this device’s browser storage.</span></p></div>';danger.before(section)}}
+if(!document.getElementById('mend-launch-polish')){const style=document.createElement('style');style.id='mend-launch-polish';style.textContent='.privacyMini{margin-top:10px;padding:10px 11px;border:1px solid #DDE7E3;border-radius:14px;background:#FAFFFC}.privacyMiniTop{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:750;color:#334155}.privacyDot{width:7px;height:7px;border-radius:50%;background:#10B981}.privacyMini p{margin:6px 0 0;font-size:10.5px;line-height:15px;color:#64748B}.privacyMini .copy-de,.privacyMini .copy-en{display:none}html[lang="de"] .privacyMini .copy-de{display:inline}html[lang="en"] .privacyMini .copy-en{display:inline}.navGrid .nav{min-width:0;padding-left:1px;padding-right:1px}.navGrid .nav span{font-size:9px}.welcome{background:linear-gradient(180deg,#fff 0%,#F8FBFF 58%,#F8FAFC 100%)}.welcomeLogo{margin-bottom:24px}.welcome .leafLogo{transform:scale(1.35);margin-right:5px}.welcome .brand{font-size:21px;letter-spacing:.1em}.welcome h1{font-size:28px;letter-spacing:-.025em}.welcome p{max-width:315px;margin-top:10px;margin-bottom:28px;line-height:21px}.welcome .getStarted{max-width:340px;margin:0 auto;display:block;box-shadow:0 5px 14px rgba(37,99,235,.15)}';document.head.appendChild(style)}
+appointmentCopy();
 if(typeof user!=='undefined'&&user&&typeof render==='function')render();
 })();
