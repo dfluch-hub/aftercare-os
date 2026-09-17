@@ -84,12 +84,33 @@ function wireListRows(root){if(!root)return;root.querySelectorAll('.listItem').f
 if(typeof renderLists==='function')renderLists=function(){const date=typeof dayDate==='function'?dayDate():'';const meds=state.items.filter(i=>i.date===date&&i.type==='med'),care=state.items.filter(i=>i.date===date&&i.type==='care'),appts=state.items.filter(i=>i.date===date&&i.type==='appt');$('medList').innerHTML=meds.map(listHTML).join('');$('careList').innerHTML=care.map(listHTML).join('');const al=document.getElementById('apptList');if(al)al.innerHTML=appts.map(listHTML).join('');$('medEmpty').classList.toggle('hidden',meds.length>0);$('careEmpty').classList.toggle('hidden',care.length>0);const ae=document.getElementById('apptEmpty');if(ae)ae.classList.toggle('hidden',appts.length>0);wireListRows($('medList'));wireListRows($('careList'));wireListRows(al);appointmentCopy()};
 document.querySelectorAll('.nav').forEach(b=>{if(b.dataset.page==='appt')b.onclick=()=>{page='appt';document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===page));['today','meds','care','appt','red'].forEach(p=>{const el=document.getElementById(p+'Page');if(el)el.classList.toggle('hidden',p!==page)});$('addBtn').style.display='block';renderLists();renderProgress()}});
 const baseRender=typeof render==='function'?render:null;
-if(baseRender)render=function(){if(page==='appt')page='today';baseRender();appointmentCopy();setWelcomeCopy()};
+if(baseRender)render=function(){if(page==='appt')page='today';baseRender();appointmentCopy();setWelcomeCopy();renderMorrowTools()};
 
 localizeDemoItems();
-document.querySelectorAll('.langBtn').forEach(btn=>btn.addEventListener('click',()=>setTimeout(()=>{appointmentCopy();if(localizeDemoItems()&&typeof render==='function')render()},0)));
+document.querySelectorAll('.langBtn').forEach(btn=>btn.addEventListener('click',()=>setTimeout(()=>{appointmentCopy();renderMorrowTools();if(localizeDemoItems()&&typeof render==='function')render()},0)));
+
+/* Small, isolated Morrow Tools brand card in Settings. */
+function renderMorrowTools(){
+  const settings=document.querySelector('.settingsSheet .sheetBody');
+  if(!settings)return;
+  let card=document.getElementById('morrowToolsCard');
+  if(!card){
+    card=document.createElement('div');
+    card.id='morrowToolsCard';
+    card.className='morrowToolsCard';
+    const danger=document.getElementById('dangerTitle');
+    const section=danger&&danger.closest('.settingsSection');
+    if(section)settings.insertBefore(card,section);else settings.appendChild(card);
+  }
+  const de=typeof lang!=='undefined'&&lang==='de';
+  card.innerHTML=de?
+    '<div class="morrowEyebrow">MORROW TOOLS</div><div class="morrowTitle">MEND</div><p>Ein ruhiges digitales Tool für deine Genesung nach einer Operation.</p><small>MEND unterstützt die Organisation deiner Genesung und ersetzt keine medizinische Beratung, Diagnose oder Notfallversorgung.</small>':
+    '<div class="morrowEyebrow">MORROW TOOLS</div><div class="morrowTitle">MEND</div><p>A calm digital tool for your recovery after surgery.</p><small>MEND supports recovery organization and does not replace medical advice, diagnosis or emergency care.</small>';
+}
+renderMorrowTools();
+
 if(!document.getElementById('privacySection')){const danger=document.getElementById('dangerTitle')?.closest('.settingsSection');if(danger){const section=document.createElement('div');section.className='settingsSection';section.id='privacySection';section.innerHTML='<h3><span class="copy-de">Datenschutz</span><span class="copy-en">Privacy</span></h3><div class="privacyMini"><div class="privacyMiniTop"><span class="privacyDot"></span><span class="copy-de">Lokal & privat</span><span class="copy-en">Local & private</span></div><p><span class="copy-de">Deine Einträge werden ausschließlich im Browserspeicher dieses Geräts gespeichert.</span><span class="copy-en">Your entries are stored only in this device’s browser storage.</span></p></div>';danger.before(section)}}
-if(!document.getElementById('mend-launch-polish')){const style=document.createElement('style');style.id='mend-launch-polish';style.textContent='.privacyMini{margin-top:10px;padding:10px 11px;border:1px solid #DDE7E3;border-radius:14px;background:#FAFFFC}.privacyMiniTop{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:750;color:#334155}.privacyDot{width:7px;height:7px;border-radius:50%;background:#10B981}.privacyMini p{margin:6px 0 0;font-size:10.5px;line-height:15px;color:#64748B}.privacyMini .copy-de,.privacyMini .copy-en{display:none}html[lang="de"] .privacyMini .copy-de{display:inline}html[lang="en"] .privacyMini .copy-en{display:inline}.navGrid .nav{min-width:0;padding-left:1px;padding-right:1px}.navGrid .nav span{font-size:9px}.welcome{background:linear-gradient(180deg,#fff 0%,#F8FBFF 58%,#F8FAFC 100%)}.welcomeLogo{margin-bottom:24px}.welcome .leafLogo{transform:scale(1.35);margin-right:5px}.welcome .brand{font-size:21px;letter-spacing:.1em}.welcome h1{font-size:28px;letter-spacing:-.025em}.welcome p{max-width:315px;margin-top:10px;margin-bottom:28px;line-height:21px}.welcome .getStarted{max-width:340px;margin:0 auto;display:block;box-shadow:0 5px 14px rgba(37,99,235,.15)}';document.head.appendChild(style)}
-appointmentCopy();
+if(!document.getElementById('mend-launch-polish')){const style=document.createElement('style');style.id='mend-launch-polish';style.textContent='.privacyMini{margin-top:10px;padding:10px 11px;border:1px solid #DDE7E3;border-radius:14px;background:#FAFFFC}.privacyMiniTop{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:750;color:#334155}.privacyDot{width:7px;height:7px;border-radius:50%;background:#10B981}.privacyMini p{margin:6px 0 0;font-size:10.5px;line-height:15px;color:#64748B}.privacyMini .copy-de,.privacyMini .copy-en{display:none}html[lang="de"] .privacyMini .copy-de{display:inline}html[lang="en"] .privacyMini .copy-en{display:inline}.navGrid .nav{min-width:0;padding-left:1px;padding-right:1px}.navGrid .nav span{font-size:9px}.welcome{background:linear-gradient(180deg,#fff 0%,#F8FBFF 58%,#F8FAFC 100%)}.welcomeLogo{margin-bottom:24px}.welcome .leafLogo{transform:scale(1.35);margin-right:5px}.welcome .brand{font-size:21px;letter-spacing:.1em}.welcome h1{font-size:28px;letter-spacing:-.025em}.welcome p{max-width:315px;margin-top:10px;margin-bottom:28px;line-height:21px}.welcome .getStarted{max-width:340px;margin:0 auto;display:block;box-shadow:0 5px 14px rgba(37,99,235,.15)}.morrowToolsCard{margin-top:10px;padding:15px 13px;border:1px solid #E7EAF0;border-radius:16px;background:linear-gradient(180deg,#FFFFFF,#F8FAFC)}.morrowEyebrow{font-size:9px;font-weight:850;letter-spacing:.22em;color:#64748B}.morrowTitle{font-size:22px;font-weight:850;letter-spacing:-.03em;color:#0F172A;margin-top:3px}.morrowToolsCard p{margin:6px 0 0;font-size:11px;line-height:16px;color:#475569}.morrowToolsCard small{display:block;margin-top:7px;font-size:9.5px;line-height:14px;color:#94A3B8}';document.head.appendChild(style)}
+appointmentCopy();renderMorrowTools();
 if(typeof user!=='undefined'&&user&&typeof render==='function')render();
 })();
