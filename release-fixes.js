@@ -114,3 +114,34 @@ if(!document.getElementById('mend-launch-polish')){const style=document.createEl
 appointmentCopy();renderMorrowTools();
 if(typeof user!=='undefined'&&user&&typeof render==='function')render();
 })();
+
+/* MEND medical notice — settings */
+(function ensureMedicalNotice(){
+  const settings=document.querySelector('.settingsSheet .sheetBody');
+  if(!settings)return;
+
+  let section=document.getElementById('medicalNoticeSection');
+  if(!section){
+    section=document.createElement('div');
+    section.className='settingsSection';
+    section.id='medicalNoticeSection';
+
+    const privacy=document.getElementById('privacySection');
+    const danger=document.getElementById('dangerTitle')?.closest('.settingsSection');
+    if(privacy) privacy.after(section);
+    else if(danger) danger.before(section);
+    else settings.appendChild(section);
+  }
+
+  const de=typeof lang!=='undefined'&&lang==='de';
+  section.innerHTML=de
+    ? '<h3>Medizinischer Hinweis</h3><div class="medicalNoticeCard"><div class="medicalNoticeTop"><span class="medicalNoticeIcon">i</span><strong>Organisation, keine medizinische Beratung</strong></div><p>MEND dient ausschließlich der Organisation und Dokumentation während der Genesung. MEND stellt keine Diagnose, gibt keine medizinische Behandlungsempfehlung und ersetzt keine ärztliche Beratung oder Notfallversorgung.</p></div>'
+    : '<h3>Medical notice</h3><div class="medicalNoticeCard"><div class="medicalNoticeTop"><span class="medicalNoticeIcon">i</span><strong>Organization, not medical advice</strong></div><p>MEND is intended only to support organization and documentation during recovery. MEND does not diagnose, provide medical treatment recommendations, or replace professional medical advice or emergency care.</p></div>';
+
+  if(!document.getElementById('mend-medical-notice-style')){
+    const style=document.createElement('style');
+    style.id='mend-medical-notice-style';
+    style.textContent='.medicalNoticeCard{margin-top:10px;padding:12px 13px;border:1px solid #DDE7E3;border-radius:14px;background:#FAFFFC}.medicalNoticeTop{display:flex;align-items:center;gap:8px;color:#334155;font-size:11.5px}.medicalNoticeIcon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#ECFDF5;color:#047857;font-size:11px;font-weight:800;flex:0 0 20px}.medicalNoticeCard p{margin:7px 0 0;font-size:10.5px;line-height:15px;color:#64748B}';
+    document.head.appendChild(style);
+  }
+})();
